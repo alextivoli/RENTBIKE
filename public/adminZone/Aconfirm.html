@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title>Details</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkCartSession()
+	{
+		$.post("/session",{checkSessionClient:true},function(data)
+		{
+			if (data==false)
+			{
+				alert('You are not logged in.');
+				window.location.href = "/public/adminZone/Alogin.html";
+			}
+			else
+			{
+				$.post("/booking",{checkSessionRole:true},function(data)
+				{
+					if (data==false)
+					{
+						alert('You are not logged in.');
+						window.location.href = "/public/adminZone/login.html";
+					}
+					else
+					{
+						$.post("/booking",{totItems:true},function(data)
+						{
+							if (data[0]<=0)
+							{
+								alert('Empty cart or email not set!');
+								window.location.href = "/public/adminZone/Alogin.html";
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+	$(document).ready(function()
+	{
+		checkCartSession();
+		$("#logout").click(function()
+		{
+			$.post("/session",{destroySession:true},function(data)
+			{
+				sessionStorage.clear();
+				window.location.href = "/";
+			});
+		});
+
+		$.post("/Aconfirm",{Conf:true},function(data)
+		{
+			$("#maincontainer").html(data[0]);
+			$("#tot").html(data[1]);
+			$("#codice").html(data[2]);
+			$("#email").html(data[3]);
+		});
+	});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-light fixed-top bg-light" >
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/public/adminZone/Alogin.html">
+				<img src="immagini\logo-icon.png" alt="" width="30" height="24" class="d-inline-block align-top">
+				RENTBIKE
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Abike.html">BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Auser.html">USER</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aorder.html">ORDER</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Amaintenance.html">MAINTENANCE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Acoupon.html">COUPON</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aaccounting.html">ACCOUNTING</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aemployee.html">EMPLOYEE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Arequestbike.html">REQUEST BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/AbikeRT.html">MONITOR BIKE</a>
+			<a class="btn btn-primary" id="logout" name="logout" role="button">Logout</a>
+		</div>
+	</nav>
+	<div class="container" style="max-width:100vw;max-height:100vh;background-size: cover; ">
+		<div class="row" style="margin-left:5vw;margin-right:5vw;">
+			<div class="container mb-3" style="position:center;margin-top:10vh;border-radius: 10px;background:#c0c0c0" id="order" name="order" >
+				<div class="row">
+					<div class="col-4">
+						<div class="container" style="background:black; margin-top: 2vh;border-radius:10px">
+							<label style="position:center; font-size: 40px;color:white"><b>DETTAGLIO PRENOTAZIONE</b></label>
+						</div>
+					</div>
+					<div class="col-2">
+						<label style="position:center;padding:10px" ><br><br>TOTAL PRICE: <b id="tot" name="tot"> </b></label>
+					</div>
+					<div class="col-3">
+						<label style="position:center;padding:10px" ><br><br>CODICE PRENOTAZIONE: <b id="codice" name="codice"></b></label>
+					</div>
+					<div class="col-3">
+						<label style="position:center;padding:10px" ><br><br>EMAIL CUSTOMER: <b id="email" name="email"></b></label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-8">
+						<div class="row">
+							<label style="position:center;padding:10px" ><br>ORDERED DETAILS:<br> <b id="maincontainer" name="maincontainer"></b></label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-left:5vw;margin-right:5vw;" >
+			<div class="col-4 mb-3" style="position:center" >
+				<button type="button" class="btn btn-primary" style="margin-left:3vw"  onclick="Stampa()" name="button">Stamp</button>
+				<button type="button" class="btn btn-primary" style="margin-left:3vw" onclick="window.location.href='/public/adminZone/Alogin.html'" name="button">Go to homepage</button>
+			</div>
+		</div>
+	</div>
+	<!-- Jquery -->
+	<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	function Stampa(){
+		var didascalia = document.getElementById('order').innerHTML;
+		var a = window.open('','','width=640,height=480');
+		a.document.open("text/html");
+		a.document.write("<html><head></head><body>");
+		a.document.write("<div ><div class='container' style='position:center;'><img src='immagini/logo_small.png'></div>"+didascalia);
+		a.document.write("</body></html>");
+		a.document.close();
+		a.print();
+	}
+	</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title>Bikes</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkSessionRole()
+	{
+		$.post("/session",{checkSessionRole:true},function(data)
+		{
+			if(data==false)
+			{
+				alert("You have to log in!");
+				window.location.href = '/public/adminZone/Aindex.html';
+			}
+		});
+	}
+
+	function checkSessionClient()
+	{
+		$.post("/session",{checkSessionClient:true},function(data)
+		{
+			if (data==false)
+			{
+				alert("You have to log in!");
+				window.location.href = '/public/adminZone/Aindex.html';
+			}
+		});
+	}
+
+	$(document).ready(function()
+	{
+		checkSessionRole();
+		checkSessionClient();
+		$("#logout").click(function()
+		{
+			$.post("/session",{destroySession:true},function(data)
+			{
+				sessionStorage.clear();
+				window.location.href = "/";
+			});
+		});
+
+		$("#insert").click(function()
+		{
+			$("#viewBike").css("display","none");
+			$("#insertBike").css("display","block");
+			$("#detailsBike").css("display","none");
+		});
+
+		$("#view").click(function()
+		{
+			$("#viewBike").css("display","block");
+			$("#insertBike").css("display","none");
+			$("#detailsBike").css("display","none");
+
+			$.post("/Abike",{list:true},function(data)
+			{
+				$("#listB").html(data);
+			});
+		});
+
+		$("#listB").on("click","button",function()
+		{
+			$("#viewBike").css("display","none");
+			$("#insertBike").css("display","none");
+			$("#detailsBike").css("display","block");
+			var idclicked = $(this).attr("id");
+			var brand = $("#brand"+idclicked).text().toUpperCase();
+			var model = $("#model"+idclicked).text().toUpperCase();
+
+			$.post("/Abike",{dt:true,details:idclicked},function(data)
+			{
+				$("#titledetails").text(brand+' '+model);
+				var resultA=data;
+				$("#detailsB").html(resultA[0]);
+				$("#qrcode").html(resultA[1]);
+			});
+		});
+
+		document.getElementById('form').onsubmit = function(event)
+		{
+			event.preventDefault();
+			var xhttp = new XMLHttpRequest();
+			xhttp.open("POST", "/upload");
+			var formData = new FormData();
+			formData.append('confirm', true);
+			formData.append('avatar', document.getElementById('avatar').files[0]);
+			formData.append('frame', document.getElementById('frame').value);
+			formData.append('brand', document.getElementById('brand').value);
+			formData.append('model', document.getElementById('model').value);
+			formData.append('size', document.getElementById('size').value);
+			formData.append('sellcost', document.getElementById('sellcost').value);
+			formData.append('rentprice', document.getElementById('rentprice').value);
+			formData.append('type', document.getElementById('type').value);
+			xhttp.send(formData);
+			xhttp.onreadystatechange = function()
+			{
+				if (this.readyState == 4 && this.status == 200)
+				{
+					var data = this.response;
+					if(data[0]=="1")
+					{
+						var idb = data.substring(1);
+						alert("Bike insert correctly with ID "+idb+"!");
+						$('#form')[0].reset();
+						window.location.href = "https://chart.apis.google.com/chart?cht=qr&chs=150x150&chl="+idb;
+					}
+					else if (data[0]=="0")
+					{
+						alert("This frame already exist in this Database!");
+						$('#form')[0].reset();
+						window.location.href = "/public/adminZone/Abike.html";
+					}
+				}
+			};
+		}
+	});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-light fixed-top bg-light" >
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/public/adminZone/Alogin.html">
+				<img src="immagini\logo-icon.png" alt="" width="30" height="24" class="d-inline-block align-top">
+				RENTBIKE
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Abike.html">BIKE</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Auser.html">USER</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aorder.html">ORDER</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Amaintenance.html">MAINTENANCE</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Acoupon.html">COUPON</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aaccounting.html">ACCOUNTING</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aemployee.html">EMPLOYEE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Arequestbike.html">REQUEST BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/AbikeRT.html">MONITOR BIKE</a>
+			<a class="btn btn-primary" id="logout" name="logout" role="button">Logout</a>
+		</div>
+	</nav>
+	<div class="container " style=" max-height: 100%; max-width: 100% ; " >
+		<div class="row " style=" max-height:100vh; max-width: 100%; ">
+			<div class="col-2" style="background:#c0c0c0; height: 100vh ;">
+				<div class="container" style=" margin-top: 7vh">
+					<nav class="nav flex-column "  >
+						<a class="nav-link normal-text  mbvh-1" id="insert" name="insert" role="button">INSERT NEW BIKE</a>
+						<a class="nav-link normal-text  mbvh-1" id="view" name="view" role="button">VIEW ALL BIKE</a>
+					</nav>
+				</div>
+			</div>
+			<div class="col" style=" margin-top: 15vh;max-height:90vh" >
+				<div class="container " name="insertBike" id="insertBike" style="display:none;">
+					<form id="form">
+						<div class="form-floating mb-3  ">
+							<input type="text" class="form-control" id="frame" name="frame" required>
+							<label for="frame">FRAME</label>
+						</div>
+						<div class="form-floating mb-3  ">
+							<input type="text" class="form-control" id="brand" name="brand" required>
+							<label for="brand">BRAND</label>
+						</div>
+						<div class="form-floating mb-3">
+							<input type="text" class="form-control" id="model" name="model" required>
+							<label for="model">MODEL</label>
+						</div>
+						<div class="form-floating mb-3">
+							SIZE:
+							<select class="btn btn-secondary"  name="size" id="size" required>
+								<option value="K">K</option>
+								<option value="S" selected="selected">S</option>
+								<option value="M">M</option>
+								<option value="L">L</option>
+							</select>
+						</div>
+						<div class="form-floating mb-3">
+							<input type="number" class="form-control" id="sellcost" name="sellcost" required>
+							<label for="sellcost">SELL PRICE(€)</label>
+						</div>
+						<div class="form-floating mb-3">
+							<input type="number" class="form-control" id="rentprice" name="rentprice" required>
+							<label for="rentprice">RENT PRICE(€)</label>
+						</div>
+						<div class="form-floating mb-3">
+							TYPE:
+							<select class="btn btn-secondary"  name="type" id="type" required>
+								<option value="kids">kids</option>
+								<option value="ride">ride</option>
+								<option value="tour" selected="selected">tour</option>
+								<option value="top">top</option>
+							</select>
+						</div>
+						<div class="form-floating mb-3">
+							UPLOAD AN IMAGE:
+							<input name="avatar" id="avatar" type="file" />
+						</div>
+						<input type="submit" value="Confirm" class="btn btn-danger mb-3" />
+					</form>
+				</div>
+				<div class="container " name="viewBike" id="viewBike" style="display:none;overflow-y:scroll;max-height:80vh;">
+					<table class="table table-dark " >
+						<thead>
+							<tr>
+								<th scope="col">ID BIKE</th>
+								<th scope="col">BRAND</th>
+								<th scope="col">MODEL</th>
+								<th scope="col">KM</th>
+								<th scope="col">DETAILS</th>
+							</tr>
+						</thead>
+						<tbody id="listB" name="listB">
+						</tbody>
+					</table>
+				</div>
+				<div class="container" name="detailsBike" id="detailsBike" style="display:none;">
+					<h1 class="sm-text mlvw-1 mb-1" style="color:#000" id="titledetails" name="titledetails">BRAND MODEL</h1>
+					<table class="table table-dark " >
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">FRAME</th>
+								<th scope="col">RENT PRICE (€)</th>
+								<th scope="col">SELL PRICE (€)</th>
+								<th scope="col">TYPE</th>
+								<th scope="col">SIZE</th>
+								<th scope="col">IMG</th>
+							</tr>
+						</thead>
+						<tbody id="detailsB" name="detailsB">
+						</tbody>
+					</table>
+					<div class="container" id="qrcode" name="qrcode">
+					</div>
+					<button type="button" class="btn btn-primary" onclick="Stampa()" name="button">Stamp</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Jquery -->
+	<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+	function Stampa(){
+		// Prelevo dalla pagina solo i blocchi che interessano
+		// Ad esempio il titolo e il corpo di un articolo
+		var didascalia = document.getElementById('detailsBike').innerHTML;
+		// Apro una finestra pop-up nella quale inserisco i blocchi
+		var a = window.open('','','width=640,height=480');
+		a.document.open("text/html");
+		a.document.write("<html><head></head><body>");
+		// Scrivo il titolo e il corpo con un pò di stile in CSS
+		a.document.write("<div style='border: 1px solid #CCCCCC'>"+didascalia);
+		a.document.write("</body></html>");
+		a.document.close();
+		// Invio il documento alla stampante
+		a.print();
+	}
+	</script>
+</body>
+</html>

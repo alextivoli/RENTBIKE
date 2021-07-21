@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Details</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkSessionRole()
+	{
+		$.post("/session",{checkSessionRole:true},function(data)
+		{
+			if(data==true)
+			{
+				alert("You have to log in!");
+				$.post("/login",{goToLoginPage:true},function(data)
+				{
+					window.location.href = data;
+				});
+			}
+		});
+	}
+	function checkCartSession()
+	{
+		$.post("/session",{checkSessionClient:true},function(data)
+		{
+			if (data==false)
+			{
+				alert('You are not logged in.');
+				window.location.href = "/public/login.html";
+			}
+			else
+			{
+				$.post("/booking",{totItems:true},function(data)
+				{
+					if (data[0]>0)
+					{
+						sessionStorage.setItem("amount",data[1]);
+						$.post("/order",function(data)
+						{
+							if (data!="")
+							{
+								$("#details").html(data);
+							}
+							else
+							{
+								alert("Something was wrong! We refunded you with a coupon!");
+								window.location.href = '/public/booking.html';
+							}
+						});
+					}
+					else
+					{
+						window.location.href = "/public/booking.html";
+					}
+				});
+			}
+		});
+	}
+
+	function go()
+	{
+		window.location.href = '/public/booking.html';
+	}
+
+	$(document).ready(function()
+	{
+		$.post("/session",{checkPageOrder:true},function(data)
+		{
+			if (data!="")
+			{
+				checkSessionRole();
+				checkCartSession();
+			}
+			else
+			{
+				window.location.replace("/public/booking.html");
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
+		<div class="container-fluid">
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" href="/">
+					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
+				</a>
+			</div>
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
+				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
+			</div>
+		</div>
+	</nav>
+	<div class="hero5">
+		<div class="hero__content reveal">
+			<div class="row mb-3 mx-auto" >
+				<div class="poster9" style="height:auto; border-radius:10px">
+						<div class="container" id="details" name="details">
+					</div>
+				</div>
+			</div>
+			<div class="row mx-auto" style="height:40vh">
+				<div class="container mx-auto mb-3" >
+					<h1><br>INFO AND ASSISTANCE</br></h1>
+					<img class="mb-3" style="border-radius:10px" src="immagini/a-a.png" alt="">
+					<a  href="tel:+393894955124">
+						<button class="btn" style="color:white;font-size:32px;margin-top:5px;margin-bottom:5px;line-height: 1em;">
+							<strong>CHIAMA Ora:<br> +39 3894955124</strong>
+						</button>
+					</a>
+					<form>
+						<input class="btn btn-primary mb-3" type="button" name="Stamp" value="Stampa" onclick="window.print()">
+						<input class="btn btn-primary mb-3" type="button" name="Start" value="Prenota ancora" onclick="go()">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer class="bg-dark text-center text-white">
+	<!-- Grid container -->
+	<div class="container p-4 pb-0">
+		<!-- Section: Social media -->
+		<section class="mb-4">
+			<!-- Facebook -->
+			<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+				<i class="fab fa-facebook-f"></i>
+			</a>
+			<!-- Google -->
+			<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+				<i class="fab fa-google"></i>
+			</a>
+			<!-- Instagram -->
+			<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+				<i class="fab fa-instagram"></i>
+			</a>
+		</section>
+		<!-- Section: Social media -->
+	</div>
+	<!-- Grid container -->
+	<!-- Copyright -->
+	<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+		© 2021 Copyright -
+		<span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
+	</div>
+	<!-- Copyright -->
+</footer>
+<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+</body>
+</html>

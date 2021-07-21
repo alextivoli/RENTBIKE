@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Reserved Area</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkSessionEmail()
+	{	
+		$.post("/session",{checkSessionEmail:true},function(data)
+		{
+			if (data=='')
+			{
+				sessionStorage.setItem("currentSession","false");
+				alert('You are not logged in.');
+				window.location.replace("/public/login.html");
+			}
+			else
+			{
+				$.post("/session",{checkSessionRole:true},function(response)
+				{
+					if(response)
+					{
+						sessionStorage.setItem("currentSession","false");
+						alert('You are not logged in.');
+						window.location.replace("/public/login.html");
+					}
+					else
+					{
+						$("#buttlog").text("Logout");
+						sessionStorage.setItem("currentSession","true");
+					}
+				});
+			}
+		});
+	}
+
+	$(document).ready(function()
+	{
+		checkSessionEmail();
+		$("#buttlog").click(function()
+		{
+			if ((sessionStorage.getItem("currentSession"))=="true")
+			{
+				$.post("/session",{destroySession:true},function(data)
+				{
+					sessionStorage.clear();
+					window.location.href = data;
+				});
+			}
+			else
+			{
+				$.post("/login",{goToLoginPage:true},function(data)
+				{
+					window.location.href = data;
+				});
+			}
+		});
+
+		$("#personaldata").click(function()
+		{
+			$("#personalcontainer").css("display","block");
+			$("#ordercontainer").css("display","none");
+			$("#couponcontainer").css("display","none");
+			$("#navigationcontainer").css("display","none");
+			$("#firstcontainer").css("display","none");
+
+			$.post("/reservedArea",{Client:true},function(data)
+			{
+				$("#listC").html(data);
+			});
+		});
+
+		$("#order").click(function()
+		{
+			$("#personalcontainer").css("display","none");
+			$("#ordercontainer").css("display","block");
+			$("#couponcontainer").css("display","none");
+			$("#navigationcontainer").css("display","none");
+			$("#firstcontainer").css("display","none");
+			$("#detailsordercontainer").css("display","none");
+
+			$.post("/reservedArea",{Order:true},function(data)
+			{
+				$("#listO").html(data);
+			});
+		});
+
+		$("#listO").on("click","button",function()
+		{
+			$("#detailsordercontainer").css("display","block");
+			$("#ordercontainer").css("display","none");
+			var idclicked = $(this).attr("id");
+
+			$.post("/reservedArea",{OrderDetails:true,idclicked:idclicked},function(data)
+			{
+				$("#listDO").html(data);
+			});
+		});
+
+		$("#coupon").click(function()
+		{
+			$("#personalcontainer").css("display","none");
+			$("#ordercontainer").css("display","none");
+			$("#couponcontainer").css("display","block");
+			$("#navigationcontainer").css("display","none");
+			$("#firstcontainer").css("display","none");
+
+			$.post("/reservedArea",{Coupon:true},function(data)
+			{
+				$("#listP").html(data);
+			});
+		});
+		$("#navigator").click(function()
+		{
+			window.location.href = "/public/AreaNavigator/navigatorLogin.html";
+		});
+
+		$(".back").click(function()
+		{
+			$("#personalcontainer").css("display","none");
+			$("#firstcontainer").css("display","block");
+			$("#ordercontainer").css("display","none");
+			$("#couponcontainer").css("display","none");
+			$("#navigationcontainer").css("display","none");
+		});
+
+		$("#first4").click(function()
+		{
+			$("#personalcontainer").css("display","none");
+			$("#firstcontainer").css("display","none");
+			$("#ordercontainer").css("display","block");
+			$("#detailsordercontainer").css("display","none");
+			$("#couponcontainer").css("display","none");
+			$("#navigationcontainer").css("display","none");
+		});
+	});
+</script>
+</head>
+<body>
+	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
+		<div class="container-fluid">
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" href="/">
+					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
+				</a>
+			</div>
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
+				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
+			</div>
+		</div>
+	</nav>
+	<div class="poster7 " >
+		<div class="container-fluid " style="margin-top:5vh">
+			<div class="container  " id="firstcontainer" name="firstcontainer" >
+				<div class="row mx-auto">
+					<div class="col mx-auto ">
+						<div class="card-trasparent" style="width: 18rem;">
+							<img src="immagini/canvas.png" class="card-img-top" >
+							<div class="card-body">
+								<button class="btn btn-light mb-3 " style="margin-left:3vw; margin-right:3vw"  type="button" name="personaldata" id="personaldata"><b> PERSONAL DATA</b></button>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card-trasparent" style="width: 18rem;">
+							<img src="immagini/canvas2.png" class="card-img-top" >
+							<div class="card-body">
+								<button class="btn btn-light mb-3" style="margin-left:6vw; margin-right:6vw" type="button" name="order" id="order"><b> ORDER</b></button>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card-trasparent" style="width: 18rem;">
+							<img src="immagini/canvas3.png" class="card-img-top" >
+							<div class="card-body">
+								<button class="btn btn-light mb-3" style="margin-left:5vw; margin-right:5vw" type="button" name="coupon" id="coupon"><b> COUPON</b></button>
+							</div>
+						</div>
+					</div>
+					<div class="col">
+						<div class="card-trasparent" style="width: 18rem;">
+							<img src="immagini/canvas4.png" class="card-img-top">
+							<div class="card-body">
+								<button class="btn btn-light mb-3" style="margin-left:5vw; margin-right:5vw" type="button" name="navigator"  id="navigator"><b> NAVIGATOR</b></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container" id="personalcontainer" name="personalcontainer" style=" display:none;">
+				<div class="row">
+					<div class="col-2">
+						<button class="btn btn-dark mb-3 back"  type="button" name="first"  id="first"><b><i class="fas fa-arrow-circle-left"></i></b></button>
+					</div>
+					<div class="col">
+						<h1 class="bh" style="color:#32cd32" ><b>YOUR PERSONAL DATA:<b></h1>
+						</div>
+					</div>
+					<div class="container" id="listC" name="listC" style=" height: 0 auto">
+					</div>
+				</div>
+				<div class="container" id="ordercontainer" name="ordercontainer" style=" display:none">
+					<div class="row">
+						<div class="col-2">
+							<button class="btn btn-dark mb-3 back"  type="button" name="first1"  id="first1"><b><i class="fas fa-arrow-circle-left"></i></b></button>
+						</div>
+						<div class="col">
+							<h1 class="bh" style="color:#32cd32"><b>YOUR ORDER:<b></h1>
+							</div>
+						</div>
+						<div class="row">
+							<div class="container" style="overflow-y:scroll; max-height:60vh">
+								<table class="table table-dark">
+									<thead>
+										<tr>
+											<th scope="col">ID</th>
+											<th scope="col">DATE BOOK</th>
+											<th scope="col">COST TOTAL</th>
+											<th scope="col">ID COUPON</th>
+											<th scope="col">DETAILS</th>
+										</tr>
+									</thead>
+									<tbody id="listO" name="listO">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="container" id="detailsordercontainer" name="detailsordercontainer" style=" display:none">
+						<div class="row">
+							<div class="col-2">
+								<button class="btn btn-dark mb-3"  type="button" name="first4"  id="first4"><b><i class="fas fa-arrow-circle-left"></i></b></button>
+							</div>
+							<div class="col">
+								<h1 class="bh" style="color:#32cd32"><b>DETAILS ORDER ID:<b></h1>
+								</div>
+							</div>
+							<div class="row">
+								<div class="container" style="overflow-y:scroll; max-height:60vh">
+									<table class="table table-dark">
+										<thead>
+											<tr>
+												<th scope="col">DATE BEGIN</th>
+												<th scope="col">DATE FINISH</th>
+												<th scope="col">BIKE BOOKED</th>
+											</tr>
+										</thead>
+										<tbody id="listDO" name="listDO">
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="container" id="couponcontainer" name="couponcontainer" style="  display:none">
+							<div class="row">
+								<div class="col-2">
+									<button class="btn btn-dark mb-3 back"  type="button" name="first3"  id="first3"><b><i class="fas fa-arrow-circle-left"></i></b></button>
+								</div>
+								<div class="col">
+									<h1 class="bh" style="color:#32cd32"><b>YOUR COUPON:<b></h1>
+									</div>
+								</div>
+								<div class="row">
+									<div class="container" style="overflow-y:scroll; max-height:60vh">
+										<table class="table table-dark">
+											<thead>
+												<tr>
+													<th scope="col">NAME</th>
+													<th scope="col">AMOUNT</th>
+													<th scope="col">PERCENT</th>
+													<th scope="col">EXPIRE</th>
+												</tr>
+											</thead>
+											<tbody id="listP" name="listP">
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<footer class="bg-dark text-center text-white">
+						<!-- Grid container -->
+						<div class="container p-4 pb-0">
+							<!-- Section: Social media -->
+							<section class="mb-4">
+								<!-- Facebook -->
+								<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+									<i class="fab fa-facebook-f"></i>
+								</a>
+								<!-- Google -->
+								<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+									<i class="fab fa-google"></i>
+								</a>
+								<!-- Instagram -->
+								<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+									<i class="fab fa-instagram"></i>
+								</a>
+							</section>
+							<!-- Section: Social media -->
+						</div>
+						<!-- Grid container -->
+						<!-- Copyright -->
+						<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+							© 2021 Copyright -
+							<span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
+						</div>
+						<!-- Copyright -->
+					</footer>
+					<!-- Jquery -->
+					<script src="js/bootstrap.min.js"></script>
+					<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+					<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+				</body>
+				</html>

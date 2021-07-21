@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Login</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="shortcut icon" src="immagini/logo-icon-media.png" />
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkSessionClient()
+	{
+		$.post("/session",{checkSessionClient:true},function(data)
+		{
+			if (data==true)
+			{
+				$.post("/session",{checkSessionRole:true},function(data)
+				{
+					if (data!=true)
+					{
+						alert('You are already logged in.');
+						window.location.href = "/";
+					}
+				});
+			}
+		});
+	}
+
+	$(document).ready(function()
+	{
+		checkSessionClient();
+		$("#register").click(function()
+		{
+			var name = $("#name").val();
+			var surname = $("#surname").val();
+			var cf = $("#cf").val();
+			var email = $("#email").val();
+			var addr = $("#addr").val();
+			var birth = $("#birth").val();
+			var tel = $("#tel").val();
+			var passw = $("#passw").val();
+			var checkbox = $("#checkbox").is(":checked");
+			if (name.length>0 && surname.length>0 && cf.length>0 && email.length>0 && addr.length>0 && birth.length>0 && tel.length>0 && passw.length>0 && checkbox)
+			{
+				var request=
+				{
+					register:true,
+					name:name,
+					surname:surname,
+					cf:cf,
+					email:email,
+					addr:addr,
+					birth:birth,
+					tel:tel,
+					passw:passw
+				};
+
+				$.post("/login",request,function(data)
+				{
+					if (data=="0")
+					{
+						alert('Congratulations, you have registered! Now login yourself.');
+						window.location.href = "/public/login.html";
+					}
+					else if (data=="1")
+					{
+						alert('Fiscal code and/or email already exist! Please,login yourself.');
+						window.location.href = "/public/login.html";
+					}
+					else
+					{
+						alert('Something was wrong!');
+						window.location.reload();
+					}
+				});
+			}
+			else
+			{
+				alert("Some empty fields!");
+			}
+		});
+
+		$("#login").click(function()
+		{
+			var mail = $("#mail").val();
+			var psw = $("#psw").val();
+			if (mail.length!=0 && psw.length!=0)
+			{
+				$.post("/login",{loginCl:true,mail:mail,psw:psw},function(data)
+				{
+					if (data[0] == 1)
+					{
+						alert('ERROR! Incorrect data or unregistered user.');
+						window.location.href = "/public/login.html";
+					}
+					else
+					{
+						window.location.href = data[1];
+					}
+				});
+			}
+			else
+			{
+				alert("Some empty fields!");
+			}
+		});
+
+		$("#forgot").click(function()
+		{
+			window.location.href = "/public/forgot.html";
+		});
+	});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
+		<div class="container-fluid">
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" href="/">
+					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
+				</a>
+			</div>
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
+				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
+				<button id="Ra" name="Ra" type="button" style="display: none;margin-right:2vw"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
+			</div>
+		</div>
+	</nav>
+	<div class="hero reveal" id="mainDiv" name="mainDiv">
+		<div class="hero__content reveal ">
+			<div class="row ">
+				<div class="col">
+				</div>
+				<div class="col">
+					<h1 class="medium-text">Sign In</h1>
+					<form class="login">
+						<div class="mb-3">
+							<label for="mail" class="form-label">Email address</label>
+							<input type="email" class="form-control" name="mail" id="mail" placeholder="email@example.com">
+						</div>
+						<div class="mb-3">
+							<label for="psw" class="form-label">Password</label>
+							<input type="password" class="form-control" name="psw" id="psw" placeholder="Password">
+						</div>
+						<button type="button" id="login" name="login" class="btn btn-primary">Sign in</button>
+					</form>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#poster2" style="color:white;">New around here? Register now</a>
+					<a class="dropdown-item"  id="forgot" name="forgot" style="color:white;">Forgot password?</a>
+				</div>
+				<div class="col">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="poster2 " id="poster2">
+		<div class="hero__content reveal  ">
+			<div class="row mx-auto ">
+				<div class="col max-auto">
+					<h1 class="medium-text " style="margin-top:10vh">Register Now</h1>
+					<form class="row g-3" id="registerform">
+						<div class="col-md-6">
+							<label for="name" class="form-label">First name</label>
+							<input type="text" class="form-control" name="name" id="name" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="surname" class="form-label">Last name</label>
+							<input type="text" class="form-control" name="surname" id="surname" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="cf" class="form-label">Fiscal Code</label>
+							<input type="text" class="form-control" name="cf" id="cf" minlength="16" maxlength="16" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="email" class="form-label">Email address</label>
+							<input type="text" class="form-control" name="email" id="email" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="addr" class="form-label">Address</label>
+							<input type="text" class="form-control" name="addr" id="addr" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="birth" class="form-label">Birthday</label>
+							<input type="date" class="form-control" name="birth" id="birth" value="" required>
+						</div>
+						<div class="col-md-6">
+							<label for="tel" class="form-label">Telephone number</label>
+							<input type="tel" class="form-control" name="tel" id="tel" name="tel" value="" pattern="[0-9]{10}" required>
+						</div>
+						<div class="col-md-6">
+							<label for="passw" class="form-label">Password</label>
+							<input type="password" class="form-control" name="passw" id="passw" value="" required>
+						</div>
+						<div class="col-12">
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value="" name="checkbox" id="checkbox" required>
+								<label class="form-check-label" for="checkbox">
+									Agree to terms and conditions.
+								</label>
+							</div>
+						</div>
+						<div class="col-12">
+							<button class="btn btn-primary" href="#mainDiv" id="register" name="register" type="button">Confirm Now!</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer class="bg-dark text-center text-white">
+		<!-- Grid container -->
+		<div class="container p-4 pb-0">
+			<!-- Section: Social media -->
+			<section class="mb-4">
+				<!-- Facebook -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+					<i class="fab fa-facebook-f"></i>
+				</a>
+				<!-- Google -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+					<i class="fab fa-google"></i>
+				</a>
+				<!-- Instagram -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+					<i class="fab fa-instagram"></i>
+				</a>
+			</section>
+			<!-- Section: Social media -->
+		</div>
+		<!-- Grid container -->
+		<!-- Copyright -->
+		<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+			© 2021 Copyright -
+			<span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
+		</div>
+		<!-- Copyright -->
+	</footer>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+</body>
+</html>

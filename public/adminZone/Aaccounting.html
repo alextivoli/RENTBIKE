@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title>Accounting</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
+	<style>
+		canvas
+		{
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+		function viewChart(config)
+		{
+			var ctx = document.getElementById("canvas").getContext("2d");
+			window.myLine = new Chart(ctx, config);
+		}
+
+		var timeFormat = 'DD/MM/YYYY';
+		var config =
+		{
+			type: 'line',
+			data:
+			{
+				datasets:
+				[
+				{
+					label: "Trend of accounting.",
+					data: [],
+					fill: false,
+					borderColor: 'red'
+				}
+				]
+			},
+			options:
+			{
+				responsive: true,
+				title:
+				{
+					display: true,
+				},
+				scales:
+				{
+					xAxes:
+					[
+					{
+
+						scaleLabel:
+						{
+							display: true,
+							labelString: 'DATE'
+						}
+					}
+					],
+					yAxes:
+					[
+					{
+						scaleLabel:
+						{
+							display: true,
+							labelString: 'AMOUNT (€)'
+						}
+					}
+					]
+				}
+			}
+		};
+
+		function checkSessionRole()
+		{
+			$.post("/session",{checkSessionRole:true},function(data)
+			{
+				if(data==false)
+				{
+					alert("You have to log in!");
+					window.location.href = '/public/adminZone/Aindex.html';
+				}
+			});
+		}
+
+		function checkSessionClient()
+		{
+			$.post("/session",{checkSessionClient:true},function(data)
+			{
+				if (data==false)
+				{
+					alert("You have to log in!");
+					window.location.href = '/public/adminZone/Aindex.html';
+				}
+			});
+		}
+
+		$(document).ready(function()
+		{
+			checkSessionRole();
+			checkSessionClient();
+			$("#logout").click(function()
+			{
+				$.post("/session",{destroySession:true},function(data)
+				{
+					sessionStorage.clear();
+					window.location.href = "/";
+				});
+			});
+
+			$("#view").click(function()
+			{
+				$("#viewAccounting").css("display","block");
+			});
+
+			var count=0;
+			$("#confirm").click(function()
+			{
+				var data1=$("#dateStart").val();
+				var data2=$("#dateFinish").val();
+				if(count==0){
+					var ctx = document.getElementById("canvas").getContext("2d");
+					window.config = new Chart(ctx, config);
+				}
+				count+=1;
+
+				if (data1!=null && data2!=null && data1<=data2)
+				{
+					$.post("/Aaccounting",{confirm:true,dateStart:data1,dateFinish:data2},function(data)
+					{
+						var allResult = data;
+						var tot=0.00;
+						window.config.data.labels=[];
+						window.config.data.datasets[0].data=[];
+						allResult.forEach(function(v,k)
+						{
+							tot+=parseFloat(v['totale']);
+							window.config.data.labels.push(v['dateok']);
+							window.config.data.datasets[0].data.push( v['totale']);
+						});
+						config.update();
+						$("#list").html("<h1 style='color:red;'><b> TOTAL COLLECTION: "+tot.toString()+"€</b></h1>");
+					});
+				}
+				else
+				{
+					$("#list").html("<p>Errore nell'inserimento dell'intervallo date.</p>");
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-light fixed-top bg-light" >
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/public/adminZone/Alogin.html">
+				<img src="immagini\logo-icon.png" alt="" width="30" height="24" class="d-inline-block align-top">
+				RENTBIKE
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Abike.html">BIKE</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Auser.html">USER</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aorder.html">ORDER</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Amaintenance.html">MAINTENANCE</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Acoupon.html">COUPON</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aaccounting.html">ACCOUNTING</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Aemployee.html">EMPLOYEE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Arequestbike.html">REQUEST BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/AbikeRT.html">MONITOR BIKE</a>
+			<a class="btn btn-primary" id="logout" name="logout" role="button">Logout</a>
+		</div>
+	</nav>
+	<div class="container " style=" max-height: 100%; max-width: 100% ; " >
+		<div class="row " style=" max-height:100vh; max-width: 100%; ">
+			<div class="col-2" style="background:#c0c0c0; height: 100vh ">
+				<div class="container" style=" margin-top: 7vh">
+					<nav class="nav flex-column "  >
+						<a class="nav-link normal-text  mbvh-1" id="view" name="view" role="button">VIEW ACCOUNTING</a>
+					</nav>
+				</div>
+			</div>
+			<div class="col" style=" margin-top: 15vh;max-height:90vh;" >
+				<div class="container " name="viewAccounting" id="viewAccounting" style="display:none;">
+						<div class="row">
+							<div class="col-4">
+								<div class="form-floating mb-3">
+									<input type="date" class="form-control" id="dateStart" >
+									<label for="dateStart">from</label>
+								</div>
+							</div>
+							<div class="col-4">
+								<div class="form-floating mb-3">
+									<input type="date" class="form-control" id="dateFinish" >
+									<label for="dateFinish">to</label>
+								</div>
+							</div>
+							<div class="col-3">
+								<button type="button" name="confirm" id="confirm" class="btn btn-secondary">Confirm!</button>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col" style="margin-top:3vh" id="list" name="list">
+							</div>
+						</div>
+						<div class="row" >
+							<div class="col-10">
+								<div style="width:75%;">
+									<canvas id="canvas"></canvas>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Jquery -->
+	<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</body>
+</html>

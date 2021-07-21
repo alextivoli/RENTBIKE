@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Checkout</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script>
+		function checkCartSession()
+		{
+			$.post("/session",{checkSessionEmail:true},function(data)
+			{
+				if (data=='')
+				{
+					alert('You are not logged in.');
+					window.location.href = "/public/login.html";
+				}
+				else
+				{
+					$.post("/session",{checkSessionRole:true},function(response)
+					{
+						if(response)
+						{
+							alert('You are not logged in.');
+							window.location.href = "/public/login.html";
+						}
+						else
+						{
+							sessionStorage.setItem("currEmail",data);
+							$.post("/booking",{totItems:true},function(data)
+							{
+								if (data[0]>0)
+								{
+									$("#numcart").text(data[0]);
+									$("#amount").text(data[1]+"€");
+									sessionStorage.setItem("amount",data[1]);
+								}
+								else
+								{
+									window.location.href = "/public/booking.html";
+								}
+							});
+						}
+					});
+				}
+			});
+
+			$.post("/payment",{setPageAfterCoupon:true},function(data)
+			{
+				if (data!='no')
+				{
+					$("#hero").css("display", "none");
+					$("#poster2").css("display", "block");
+					$("#idcoupon").val(data);
+					$("#idcoupon").prop('readonly',true);
+					$("#confirmCoupon").prop('disabled',true);
+				}
+			});
+
+			$.post("/payment",{view:true},function(data)
+			{
+				$("#maincontainer").html(data);
+			});
+		}
+
+		$(document).ready(function()
+		{
+			checkCartSession();
+			$("#maincontainer").on("click","button",function()
+			{
+				var idclicked = $(this).attr("id");
+				$.post("/payment",{rm:true,remove:idclicked},function(data)
+				{
+					$("#maincontainer").html(data);
+					window.location.reload();
+				});
+			});
+
+			$("#pay").click(function()
+			{
+				if (parseInt($("#numcart").text())<=0)
+				{
+					$("#pay").prop("disabled",true);
+					$("#numcart").prop("disabled",true);
+				}
+				else
+				{
+					$("#hero").css("display", "none");
+					$("#poster2").css("display", "block");
+				}
+
+				$.post("/payment",{couponSet:true},function(data)
+				{
+					if (data!="not")
+					{
+						$("#idcoupon").val(data);
+						$("#idcoupon").prop('readonly',true);
+						$("#confirmCoupon").prop('disabled',true);
+					}
+				});
+			});
+
+			$("#confirmCoupon").click(function()
+			{
+				var coupon=$("#idcoupon").val().toUpperCase();
+				if (coupon!="" && coupon!="undefined")
+				{
+					$.post("/payment",{cc:true,confirmCoupon:coupon},function(result)
+					{
+						var resultA=result.split(':');
+						var tot = resultA[1];
+						if (resultA[0]=="ok")
+						{
+							alert('Coupon valid!');
+							tot = parseFloat(tot);
+							$("#amount").text(tot+'€');
+							$("#idcoupon").prop('readonly',true);
+							$("#confirmCoupon").prop('disabled',true);
+							window.location.reload();
+						}
+						else if (resultA[0]=="nook")
+						{
+							alert('Coupon invalid o alredy used!');
+							$("#idcoupon").val("");
+						}
+						else if (resultA[0]=="no")
+						{
+							alert('Server or DB error!');
+							window.location.reload();
+						}
+						else if(resultA[0]=="disc")
+						{
+							alert('Valid coupon! The rest of the coupon credit will no longer be usable.');
+							tot = parseFloat(tot);
+							$("#amount").text(tot+'€');
+							$("#idcoupon").prop('readonly',true);
+							$("#confirmCoupon").prop('disabled',true);
+							window.location.replace("/public/order.html");
+						}
+						else
+						{
+							$("#idcoupon").val(tot);
+							$("#idcoupon").prop('readonly',true);
+							$("#confirmCoupon").prop('disabled',true);
+							alert('You have already added a coupon!');
+						}
+					});
+				}
+				else
+				{
+					alert('You have to insert a coupon!');
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
+		<div class="container-fluid">
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" href="/">
+					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
+				</a>
+			</div>
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
+				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
+				<button type="button" onclick="window.location.href='/public/payment.html';" class="btn btn-primary" id="cart" name="cart">
+					Cart <span class="badge bg-secondary" id="numcart" name="numcart">0</span>
+				</button>
+			</div>
+		</div>
+	</nav>
+	<div class="hero2 " id="hero" >
+		<div class="hero__content reveal">
+			<div class="col">
+				<div class="poster4" style="border-radius:10px" >
+					<div class="row-xl-4">
+						<div class="container " ; >
+							<h1 class="med-text  mlvw-1 "><b>Your Cart</b></h1>
+						</div>
+					</div>
+					<div class="row-xl-4">
+						<div class="container" id="maincontainer" name="maincontainer" style=" max-height: 50vh;  overflow-y:scroll">
+						</div>
+						<a class="btn btn-primary dropdown mt-3" id="pay" name="pay" type="button" style="color:#fff" role="button">GO TO PAYMENT</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="poster2" id="poster2" name="poster2" style=" display:none;margin:0 auto; position: relative;">
+		<div class="container"  >
+				<div class="row mx-auto" >
+					<h1 class="text1 mlvw-1 mb-1 mtvh-2" style="margin-top:20vh; "><b>Pay now!</b></h1>
+					<h1 class="text2 mlvw-1" id="amount"style="font-size:100px" name="amount">0.00€</h1>
+				</div>
+				<div class="row mb-3 mx-auto" >
+					<form class="form-floating " >
+						<input type="text" class="form-control mb-3" id="idcoupon" style="background:#3b7bbf" name="idcoupon">
+						<label class="coupon" for="floatingInputValue" style="margin-left: 1vw; color:white">Insert ID Coupon</label>
+						<button type="button" id="confirmCoupon" name="confirmCoupon" class="btn btn-primary" > Confirm!</button>
+					</form>
+				</div>
+				<div class="row mx-auto" >
+					<div id="paypal-button" style=" width: 100vw" ></div>
+				</div>
+		</div>
+	</div>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+	<script type="text/javascript">
+		function showPayment()
+		{
+			document.getElementById('poster2').style = "display:block";
+			document.getElementById('hero').style = "display:none";
+		}
+
+		function finishPayment()
+		{
+			$.post("/session",{setPageOrder:true},function(data)
+			{
+				if (data!="")
+				{
+					location.href = '/public/order.html';
+				}
+			});
+		}
+
+		function checkEmail()
+		{
+			$.post("/session",{checkSessionEmail:true},function(data)
+			{
+				if(data!=sessionStorage.getItem("currEmail"))
+				{
+					window.location.replace('/public/booking.html');
+				}
+			});
+		}
+	</script>
+	<script>
+		paypal.Button.render({
+			// Configure environment
+			env: 'sandbox',
+			client: {
+				sandbox: 'AQ6Of_MGUUgzq9_mn8LbO1nno3zSk0I9HRRn3VVtB53DjH4arVM_tapAu7rRtO1M26CjvgfthDzRXUjJ'
+				//production: 'demo_production_client_id'
+			},
+			// Customize button (optional)
+			locale: 'en_US',
+			style:
+			{
+				size: 'large',
+				color: 'gold',
+				shape: 'pill',
+				layout: 'horizontal',
+				fundingicons: 'true',
+				label: 'checkout'
+				//tagline: 'true'
+			},
+			funding:
+			{
+				allowed: [ paypal.FUNDING.CARD ],
+				disallowed: [ paypal.FUNDING.CREDIT ]
+			},
+			// Enable Pay Now checkout flow (optional)
+			commit: true,
+
+			// Set up a payment
+			payment: function(data, actions)
+			{
+				checkEmail();
+				return actions.payment.create(
+				{
+					transactions:[
+					{
+						amount:
+						{
+							total: sessionStorage.getItem("amount"),
+							currency: 'EUR'
+						}
+					}]
+				});
+			},
+			// Execute the payment
+			onAuthorize: function(data, actions)
+			{
+				return actions.payment.execute().then(function()
+				{
+					// Show a confirmation message to the buyer
+					finishPayment();
+				});
+			}
+		}, '#paypal-button');
+	</script>
+	<footer class="bg-dark text-center text-white">
+		<!-- Grid container -->
+		<div class="container p-4 pb-0">
+			<!-- Section: Social media -->
+			<section class="mb-4">
+				<!-- Facebook -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+					<i class="fab fa-facebook-f"></i>
+				</a>
+				<!-- Google -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+					<i class="fab fa-google"></i>
+				</a>
+				<!-- Instagram -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+					<i class="fab fa-instagram"></i>
+				</a>
+			</section>
+			<!-- Section: Social media -->
+		</div>
+		<!-- Grid container -->
+		<!-- Copyright -->
+		<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+			© 2021 Copyright -
+			<span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
+		</div>
+		<!-- Copyright -->
+	</footer>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+</body>
+</html>

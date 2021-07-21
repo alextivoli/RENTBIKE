@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Manage</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function today()
+	{
+		var today = new Date();
+		var dd = String(today.getDate()).padStart(2, '0');
+		var mm = String(today.getMonth() + 1).padStart(2, '0');
+		var yyyy = today.getFullYear();
+		today = yyyy + '-' + mm + '-' + dd;
+		return today;
+	}
+
+	function checkSessionRole()
+	{
+		$.post("/session",{checkSessionRole:true},function(data)
+		{
+			if(data==false)
+			{
+				window.location.href = '/public/adminZone/Aindex.html';
+			}
+		});
+	}
+
+	function checkSessionName()
+	{
+		$.post("/session",{checkSessionName:true},function(data)
+		{
+			if (data=="")
+			{
+				alert("You have to log in!");
+				window.location.href = '/public/adminZone/Aindex.html';
+			}
+			else
+			{
+				$("#nameadmin").text(data+"!");
+			}
+		});
+	}
+
+	$(document).ready(function()
+	{
+		$("#dateSet").val(today());
+		$("#ad").prop('min',today());
+		$("#dd").prop('min',today());
+		checkSessionName();
+		checkSessionRole();
+
+		$("#logout").click(function()
+		{
+			$.post("/session",{destroySession:true},function(data)
+			{
+				sessionStorage.clear();
+				window.location.href = "/";
+			});
+		});
+
+		$.post("/Alogin",{writeCart:true},function(data)
+		{
+			if (data[0]!="")
+			{
+				$("#total").text(' '+data[1]+" €");
+				$("#cart").html(data[0]);
+			}
+			else
+			{
+				$("#total").text("0.00 €");
+				$("#cart").text("Empty cart!");
+			}
+		});
+
+		$("#register").click(function()
+		{
+			$("#initial").css("display","none");
+			$("#registerClient").css("display","block");
+			$("#insertBooking").css("display","none");
+		});
+
+		$("#registerConfirm").click(function()
+		{
+			var name = $("#name").val();
+			var surname = $("#surname").val();
+			var cf = $("#cf").val();
+			var email = $("#email").val();
+			var addr = $("#addr").val();
+			var birth = $("#birth").val();
+			var tel = $("#tel").val();
+			var passw = $("#psw").val();
+			$.post("/Alogin",{register:true,name:name,surname:surname,cf:cf,email:email,addr:addr,birth:birth,tel:tel,psw:passw},function(data)
+			{
+				alert(data);
+				window.location.href = "/public/adminZone/Alogin.html";
+			});
+		});
+
+		$("#confirm").click(function()
+		{
+			var mail = $("#mail").val();
+			$.post("/Alogin",{checkConfirm:true},function(data)
+			{
+				if (data=="ok" && mail.length>0)
+				{
+					if (confirm("Are you sure to create a booking?"))
+					{
+						window.location.href="/public/adminZone/Aconfirm.html";
+					}
+				}
+				else
+				{
+					alert('Something is not set or empty cart!');
+				}
+			});
+		});
+
+		$("#clean").click(function()
+		{
+			$.post("/Alogin",{cleancart:true},function(data)
+			{
+				if (data=="ok")
+				{
+					$("#total").text("0.00 €");
+					$("#cart").text("Empty cart!");
+				}
+			});
+		});
+
+		$("#insert").click(function()
+		{
+			$("#initial").css("display","none");
+			$("#registerClient").css("display","none");
+			$("#insertBooking").css("display","block");
+		});
+
+		$("#dd").change(function()
+		{
+			var ad = $("#ad").val();
+			var dd = $("#dd").val();
+			if (ad.length>0)
+			{
+				if (dd<ad)
+				{
+					$("#dd").val(ad);
+				}
+			}
+		});
+
+		$("#ad").change(function()
+		{
+			var ad = $("#ad").val();
+			var dd = $("#dd").val();
+			if (ad.length>0)
+			{
+				if (dd<ad)
+				{
+					$("#dd").val(ad);
+				}
+			}
+		});
+
+		$("#btcheck").click(function()
+		{
+			var ad = $("#ad").val();
+			var dd = $("#dd").val();
+			$.post("/Alogin",{btck:true,var1:ad,var2:dd},function(data)
+			{
+				$("#detailsB").html(data);
+			});
+		});
+
+		$("#btExit").click(function()
+		{
+			var date = $("#dateSet").val();
+			if(date.length>0)
+			{
+				$.post("/Alogin",{btex:true,btExit:date},function(data)
+				{
+					if(data!="no")
+					{
+						$("#listToday").html(data);
+					}
+					else
+					{
+						$("#listToday").html("<b>No bikes exit for this day.</b>");
+					}
+				});
+			}
+			else
+			{
+				alert("Date is not set!");
+			}
+		});
+
+		$("#btReturn").click(function()
+		{
+			var date = $("#dateSet").val();
+			if(date.length>0)
+			{
+				$.post("/Alogin",{btrt:true,btReturn:date},function(data)
+				{
+					if(data!="no")
+					{
+						$("#listToday").html(data);
+					}
+					else
+					{
+						$("#listToday").html("<b>No bikes return for this day.</b>");
+					}
+				});
+			}
+			else
+			{
+				alert("Date is not set!");
+			}
+		});
+
+		$("#mail").change(function()
+		{
+			var mail = $("#mail").val();
+			if (mail.length>0)
+			{
+				$.post("/Alogin",{vrem:true,verifyEmail:mail},function(data)
+				{
+					if (data!="")
+					{
+						$("#labelName").text(data);
+					}
+					else
+					{
+						$("#labelName").text("WARNING! User not found!");
+					}
+				});
+			}
+		});
+
+		$("#maincontainer").on("click","button",function()
+		{
+			var idclicked = $(this).attr("id");
+			if ($("#"+idclicked).prop("disabled")==false)
+			{
+				var ad = $("#ad").val();
+				var dd = $("#dd").val();
+
+				$.post("/Alogin",{idC:true,idclk:idclicked,ad:ad,dd:dd},function(data)
+				{
+					$("#"+idclicked).prop("disabled",true);
+					alert("Bike added to cart!");
+					$("#cart").html(data[0]);
+					$("#total").text(' '+data[1]+" €");
+				});
+			}
+			else
+			{
+				alert("Items already added!");
+			}
+		});
+
+		$("#maincontainer2").on("click","button",function()
+		{
+			var idclicked = $(this).attr("id");
+			$.post("/Alogin",{rm:true,remove:idclicked},function(data)
+			{
+				alert("Bike removed from cart!");
+				$("#detailsB").html(data[1]);
+				$("#cart").html(data[0]);
+				$("#total").text(' '+data[2]+" €");
+			});
+		});
+	});
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-light fixed-top bg-light" >
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/public/adminZone/Alogin.html">
+				<img src="immagini\logo-icon.png" alt="" width="30" height="24" class="d-inline-block align-top">
+				RENTBIKE
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/public/adminZone/Abike.html">BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Auser.html">USER</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aorder.html">ORDER</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Amaintenance.html">MAINTENANCE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Acoupon.html">COUPON</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aaccounting.html">ACCOUNTING</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Aemployee.html">EMPLOYEE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/Arequestbike.html">REQUEST BIKE</a>
+			<a class="navbar-brand"aria-current="page" href="/public/adminZone/AbikeRT.html">MONITOR BIKE</a>
+			<a class="btn btn-primary" id="logout" name="logout" role="button">Logout</a>
+		</div>
+	</nav>
+	<div class="poster5" id="initial" name="initial" style=" width:100vw; height:100vh; overflow:hidden;">
+		<div class="row">
+			<div class="col" style="max-width:20vw">
+				<div class="row">
+					<div class="container " style="margin-top:20vh;margin-left:10vh" >
+						<label for="hello" class="form-label big-text" style="color:white">Hello</label><br>
+						<label for="name" id="nameadmin" name="nameadmin" class="form-label big-text mb-3" style="color:white"></label>
+					</div>
+				</div>
+				<div class="row mb-3" style="margin-left:10vh">
+					<button class="btn btn-primary" id="register" name="register" type="button" name="button">Register new Client</button>
+				</div>
+				<div class="row"  style="margin-left:10vh">
+					<button class="btn btn-primary mb-3" id="insert" name="insert" type="button" name="button">Insert new Booking</button>
+				</div>
+			</div>
+			<div class="col" style="margin-left:10vw;max-width:80vw;">
+				<div class="row mb-3" style="background:#c0c0c0; border-radius:10px;">
+					<div class="col-3">
+						<div class="it-datepicker-wrapper theme-dark mb-3">
+							<div class="form-group">
+								<h5 for="date2"  style="color: black;"><b>Date to check</b></h5>
+								<input class="form-control it-date-datepicker" style=" width:12vw" id="dateSet"  type="date">
+							</div>
+						</div>
+					</div>
+					<div class="col-2">
+						<button class="btn btn-dark" type="button" id="btExit"  style=" width:10vw; margin-top:4vh">Bike to exit</button>
+					</div>
+					<div class="col-2">
+						<button class="btn btn-dark" type="button" id="btReturn"  style=" margin-left: 3vw;width:10vw; margin-top:4vh">Bike to return</button>
+					</div>
+				</div>
+				<div class="col" style="overflow-y:scroll;max-height:50vh ">
+					<table class="table table-dark " style="width:60vw;">
+						<thead>
+							<tr>
+								<th scope="col">ID BOOKING</th>
+								<th scope="col">NAME</th>
+								<th scope="col">SURNAME</th>
+								<th scope="col">MAIL</th>
+								<th scope="col">ID BIKE</th>
+							</tr>
+						</thead>
+						<tbody id="listToday">
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container" id="insertBooking" name="insertBooking" style="display:none; margin-top:10vh">
+		<div class="row">
+			<div class="col" style="max-width:50vw;">
+				<div class="row mb-3">
+					<div class="col-4">
+						<div class="it-datepicker-wrapper theme-dark mb-3">
+							<div class="form-group">
+								<h5 for="date2"  style="color: black;">Date Start</h5>
+								<input class="form-control it-date-datepicker" style=" width:12vw" id="ad" name="ad" type="date" placeholder="inserisci la data in formato gg/mm/aaaa">
+							</div>
+						</div>
+					</div>
+					<div class="col-4">
+						<div class="it-datepicker-wrapper theme-dark mb-3">
+							<div class="form-group">
+								<h5 for="date2 " style="color: black">Date Finish</h5>
+								<input class="form-control it-date-datepicker" style=" width:12vw" id="dd" name="dd" type="date" placeholder="inserisci la data in formato gg/mm/aaaa">
+							</div>
+						</div>
+					</div>
+					<div class="col-2">
+						<button class="btn btn-primary" type="button" id="btcheck" name="btcheck" style=" margin-left: 3vw;width:10vw; margin-top:4vh">Check!</button>
+					</div>
+				</div>
+				<div class="row mb-3" style="height:40vh;overflow-y:scroll; " id="maincontainer" name="maincontainer">
+					<table class="table table-dark">
+						<thead>
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">BRAND</th>
+								<th scope="col">MODEL</th>
+								<th scope="col">PRICE (€)</th>
+								<th scope="col">TYPE</th>
+								<th scope="col">SIZE</th>
+								<th scope="col">SELECT</th>
+							</tr>
+						</thead>
+						<tbody id="detailsB" name="detailsB">
+						</tbody>
+					</table>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<div class="form-floating mb-3">
+							<input type="email" class="form-control" id="mail" name="mail" required>
+							<label for="mail">EMAIL CLIENT</label>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<div class="p-3 border bg-light" style="border-radius:10px" id="labelName"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col" style="max-width:50vw; margin-left:3vw; background:#c0c0c0; border-radius: 10px;">
+				<div class="row">
+					<h3 class="sm-text  " style="color:#000"><b>CART</b></h3>
+				</div>
+				<div class="row mb-3" style="height:40vh;overflow-y:scroll; margin-left:1vw; margin-right:1vw;" id="maincontainer2" name="maincontainer2">
+					<table class="table table-dark " >
+						<thead>
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">BRAND</th>
+								<th scope="col">MODEL</th>
+								<th scope="col">€</th>
+								<th scope="col">TYPE</th>
+								<th scope="col">SIZE</th>
+								<th scope="col">FROM</th>
+								<th scope="col">TO</th>
+								<th scope="col">REMOVE</th>
+							</tr>
+						</thead>
+						<tbody id="cart" name="cart">
+						</tbody>
+					</table>
+				</div>
+				<div class="row">
+					<h3 class="sm-text mb-3 " style="color:#000"><b>TOTAL:</b><span id="total"></span></h3>
+				</div>
+				<div class="row">
+					<div class="col">
+						<button class="btn btn-primary mb-3" type="button" id="confirm" name="confirm" style=" margin-left: 3vw;width:10vw">Confirm!</button>
+					</div>
+					<div class="col">
+						<button class="btn btn-primary mb-3" type="button" id="clean" name="clean" style=" margin-left: 3vw;width:10vw">Clean cart</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container" id="registerClient" name="registerClient" style="display:none; margin-top:15vh">
+		<div class="col-md-6">
+			<label for="name" class="form-label" style="color:black"><b>First name</b></label>
+			<input type="text" class="form-control" name="name" id="name" value="" required>
+		</div>
+		<div class="col-md-6">
+			<label for="surname" class="form-label" style="color:black"><b>Last name</b></label>
+			<input type="text" class="form-control" name="surname" id="surname" value="" required>
+		</div>
+		<div class="col-md-6">
+			<label for="cf" class="form-label" style="color:black"><b>Fiscal Code</b></label>
+			<input type="text" class="form-control" name="cf" id="cf" required>
+		</div>
+		<div class="col-md-6">
+			<label for="email" class="form-label" style="color:black"><b>Email address</b></label>
+			<input type="text" class="form-control" name="email" id="email" value="" required>
+		</div>
+		<div class="col-md-6">
+			<label for="addr" class="form-label" style="color:black"><b>Address</b></label>
+			<input type="text" class="form-control" name="addr" id="addr" value="" required>
+		</div>
+		<div class="col-md-6">
+			<label for="birth" class="form-label" style="color:black"><b>Birthday</b></label>
+			<input type="date" class="form-control" name="birth" id="birth" value="" required>
+		</div>
+		<div class="col-md-6">
+			<label for="tel" class="form-label" style="color:black"><b>Telephone number</b></label>
+			<input type="tel" class="form-control" name="tel" id="tel" name="tel" pattern="[0-9]{10}" required>
+		</div>
+		<div class="col-md-6">
+			<label for="psw" class="form-label" style="color:black"><b>Password</b></label>
+			<input type="password" class="form-control" name="psw" id="psw" required>
+		</div>
+		<div class="col-12">
+			<button class="btn btn-primary" href="#mainDiv" name="registerConfirm" id="registerConfirm" type="submit">Confirm Now!</button>
+		</div>
+	</div>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap.bundle.min.js"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+</body>
+</html>
