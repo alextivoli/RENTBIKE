@@ -1,51 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Booking</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+		integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw=="
+		crossorigin="anonymous" />
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css"
+		integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ=="
+		crossorigin="anonymous" />
 	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
-		function checkSessionClient()
-		{
-			$.post("/session",{checkSessionClient:true},function(data)
-			{
-				if(data == false)
-				{
+		function checkSessionClient() {
+			$.post("/session", { checkSessionClient: true }, function (data) {
+				if (data == false) {
 					alert("You have to log in!");
-					$.post("/login",{goToLoginPage:true},function(data)
-					{
+					$.post("/login", { goToLoginPage: true }, function (data) {
 						window.location.href = data;
 					});
 				}
 			});
 		}
 
-		function checkSessionRole()
-		{
-			$.post("/session",{checkSessionRole:true},function(data)
-			{
-				if(data==true)
-				{
+		function checkSessionRole() {
+			$.post("/session", { checkSessionRole: true }, function (data) {
+				if (data == true) {
 					alert("You have to log in!");
-					$.post("/login",{goToLoginPage:true},function(data)
-					{
+					$.post("/login", { goToLoginPage: true }, function (data) {
 						window.location.href = data;
 					});
 				}
 			});
 		}
 
-		function today()
-		{
+		function today() {
 			var today = new Date();
 			var dd = String(today.getDate()).padStart(2, '0');
 			var mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -54,88 +50,69 @@
 			return today;
 		}
 
-		function getTotItems()
-		{
-			$.post("/booking",{totItems:true},function(data)
-			{
+		function getTotItems() {
+			$.post("/booking", { totItems: true }, function (data) {
 				//sessionStorage.setItem("numItems",data);
 				$("#numcart").text(data[0]);
 			});
 		}
 
-		$(document).ready(function()
-		{
-			$("#ad").prop('min',today());
-			$("#dd").prop('min',today());
+		$(document).ready(function () {
+			$("#ad").prop('min', today());
+			$("#dd").prop('min', today());
 			checkSessionRole();
 			checkSessionClient();
 			getTotItems();
 
 			//select data Start
-			$("#ad").change(function()
-			{
+			$("#ad").change(function () {
 				var ad = $("#ad").val();
 				var dd = $("#dd").val();
-				if (ad.length>0)
-				{
-					if (dd<ad)
-					{
+				if (ad.length > 0) {
+					if (dd < ad) {
 						$("#dd").val(ad);
 					}
 				}
 			});
 
 			//select data Finish
-			$("#dd").change(function()
-			{
+			$("#dd").change(function () {
 				var ad = $("#ad").val();
 				var dd = $("#dd").val();
-				if (ad.length>0)
-				{
-					if (dd<ad)
-					{
+				if (ad.length > 0) {
+					if (dd < ad) {
 						$("#dd").val(ad);
 					}
 				}
 			});
 
-			$("#btcheck").click(function()
-			{
+			$("#btcheck").click(function () {
 				var ad = $("#ad").val();
 				var dd = $("#dd").val();
-				if(ad.length>0 && dd.length>0 && ad<=dd)
-				{
-					$.post("/booking",{btcheck:true,var1:ad,var2:dd},function(data)
-					{
+				if (ad.length > 0 && dd.length > 0 && ad <= dd) {
+					$.post("/booking", { btcheck: true, var1: ad, var2: dd }, function (data) {
 						$("#maincontainer").html(data);
 					});
 				}
-				else
-				{
+				else {
 					$("#maincontainer").html("<p>Insert correct fields.</p>");
 				}
 			});
 
-			$("#cart").click(function()
-			{
+			$("#cart").click(function () {
 				var num = parseInt($("#numcart").text());
-				if (num>0)
-				{
-					window.location.href='/public/payment.html';
+				if (num > 0) {
+					window.location.href = '/payment.html';
 				}
-				else
-				{
+				else {
 					alert("Add something to the cart!");
 				}
 			});
 
-			$("#cleancart").click(function()
-			{
+			$("#cleancart").click(function () {
 
-				$.post("/booking",{cleanCart:true},function(data)
-				{
-					if(data == true)
-					{
+				$.post("/booking", { cleanCart: true }, function (data) {
+					if (data == true) {
 						alert("Cart clean successfull!");
 						window.location.reload();
 					}
@@ -143,48 +120,42 @@
 				});
 			});
 
-			$("#maincontainer").on("click","button",function()
-			{
+			$("#maincontainer").on("click", "button", function () {
 				//se riclicca lo tolgo dal carrello--> da implementare
 				var idclicked = $(this).attr("id");
-				if ($("#"+idclicked).prop("disabled")==false)
-				{
+				if ($("#" + idclicked).prop("disabled") == false) {
 					var ad = $("#ad").val();
 					var dd = $("#dd").val();
-					$.post("/booking",{idclick:true,idclk:idclicked,ad:ad,dd:dd},function(data)
-					{
-						if(data==true)
-						{
+					$.post("/booking", { idclick: true, idclk: idclicked, ad: ad, dd: dd }, function (data) {
+						if (data == true) {
 							alert("Bike added to cart!");
-							$("#numcart").text(parseInt($("#numcart").text())+1);
-							$("#"+idclicked).prop("disabled",true);
+							$("#numcart").text(parseInt($("#numcart").text()) + 1);
+							$("#" + idclicked).prop("disabled", true);
 						}
-						else
-						{
+						else {
 							alert("Internal Error!")
 						}
 					});
 				}
-				else
-				{
+				else {
 					alert("Items already added!");
 				}
 			});
 
-	});
+		});
 
-</script>
+	</script>
 </head>
 
 <body>
-	<nav class="navbar navbar-dark fixed-top bg-dark " style="max-width:100%" >
+	<nav class="navbar navbar-dark fixed-top bg-dark " style="max-width:100%">
 		<div class="container">
 			<a class="navbar-brand" href="/">
 				<img src="immagini/logo_small.png" alt="" width="200" height="50">
 			</a>
-			<a class="navbar-brand" aria-current="page" href="/">Home</a>
-			<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
-			<a class="navbar-brand"aria-current="page" href="/public/contact.html">Contact</a>
+			<a class="navbar-brand" aria-current="page" href="index.html">Home</a>
+			<a class="navbar-brand" aria-current="page" href="booking.html">Booking</a>
+			<a class="navbar-brand" aria-current="page" href="contact.html">Contact</a>
 
 			<button type="button" class="btn btn-primary" id="cart" name="cart">
 				Cart <span class="badge bg-secondary" id="numcart">0</span>
@@ -196,10 +167,10 @@
 			<div class="hero__content">
 				<div class="row">
 					<h1 class="big-text" style="margin-left:10vh">Choose your bike!</h1>
-					<div class="col-sm-5"  style="margin-left:20vh">
+					<div class="col-sm-5" style="margin-left:20vh">
 						<div class="it-datepicker-wrapper theme-dark mb-3">
 							<div class="form-group">
-								<h5 for="date2"  style="color: white">Date Start</h5>
+								<h5 for="date2" style="color: white">Date Start</h5>
 								<input class="form-control it-date-datepicker" id="ad" name="ad" type="date">
 							</div>
 						</div>
@@ -209,8 +180,10 @@
 								<input class="form-control it-date-datepicker" id="dd" name="dd" type="date">
 							</div>
 						</div>
-						<button type="button" name="btcheck" id="btcheck" class="btn btn-secondary mb-3">Check Availability</button>
-						<button type="button" name="cleancart" id="cleancart" class="btn btn-secondary">Clean Cart</button>
+						<button type="button" name="btcheck" id="btcheck" class="btn btn-secondary mb-3">Check
+							Availability</button>
+						<button type="button" name="cleancart" id="cleancart" class="btn btn-secondary">Clean
+							Cart</button>
 					</div>
 				</div>
 			</div>
@@ -228,15 +201,18 @@
 			<!-- Section: Social media -->
 			<section class="mb-4">
 				<!-- Facebook -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
 					<i class="fab fa-facebook-f"></i>
 				</a>
 				<!-- Google -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
 					<i class="fab fa-google"></i>
 				</a>
 				<!-- Instagram -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
 					<i class="fab fa-instagram"></i>
 				</a>
 			</section>
@@ -252,6 +228,9 @@
 	</footer>
 	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
 	<script src="js/bootstrap.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js"
+		integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA=="
+		crossorigin="anonymous"></script>
 </body>
+
 </html>

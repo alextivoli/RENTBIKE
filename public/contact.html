@@ -1,77 +1,73 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Contact us</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+		integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw=="
+		crossorigin="anonymous" />
 	<link rel="stylesheet" href="style.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css"
+		integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ=="
+		crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
-		function checkSessionEmail()
-		{
-			$.post("/session",{checkSessionName:true},function(data)
-			{
-				if (data.length>0)
-				{
+		function checkSessionEmail() {
+			$.post("/session", { checkSessionName: true }, function (data) {
+				if (data.length > 0) {
 					$("#buttlog").text("Logout");
-					$("#Ra").css("display","block");
-					sessionStorage.setItem("currentSession","true");
+					$("#Ra").css("display", "block");
+					sessionStorage.setItem("currentSession", "true");
 				}
-				else
-				{
-					sessionStorage.setItem("currentSession","false");
+				else {
+					sessionStorage.setItem("currentSession", "false");
 				}
 			});
 		}
 
-		$(document).ready(function()
-		{
+		$(document).ready(function () {
 			$("#buttlog").text("Sign In");
 			checkSessionEmail();
 
-			$("#buttlog").click(function()
-			{
-				if ((sessionStorage.getItem("currentSession"))=="true")
-				{
-					$.post("/session",{destroySession:true},function(data)
-					{
+			$("#buttlog").click(function () {
+				if ((sessionStorage.getItem("currentSession")) == "true") {
+					$.post("/session", { destroySession: true }, function (data) {
 						sessionStorage.clear();
 						window.location.href = data;
 					});
 				}
-				else
-				{
-					$.post("/login",{goToLoginPage:true},function(data)
-					{
+				else {
+					$.post("/login", { goToLoginPage: true }, function (data) {
 						window.location.href = data;
 					});
 				}
 			});
 
-			$("#Ra").click(function()
-			{
-				window.location.href = "/public/reservedArea.html";
+			$("#Ra").click(function () {
+				window.location.href = "/reservedArea.html";
 			});
 
 		});
 
 	</script>
 </head>
+
 <body>
 	<nav class="navbar navbar-dark fixed-top bg-dark ">
 		<div class="container">
 			<a class="navbar-brand" href="/">
 				<img src="immagini/logo_small.png" alt="" width="200" height="50">
 			</a>
-			<a class="navbar-brand" aria-current="page" href="/">Home</a>
-			<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
-			<a class="navbar-brand"aria-current="page" href="/public/contact.html">Contact</a>
-			<button id="Ra" name="Ra" type="button" style="display:none"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
+			<a class="navbar-brand" aria-current="page" href="index.html">Home</a>
+			<a class="navbar-brand" aria-current="page" href="booking.html">Booking</a>
+			<a class="navbar-brand" aria-current="page" href="contact.html">Contact</a>
+			<button id="Ra" name="Ra" type="button" style="display:none" class="btn btn-success"><i
+					class="fas fa-vihara"></i> Reserved Area</button>
 
 			<button type="submit" name="buttlog" id="buttlog" class="btn btn-primary"></button>
 		</div>
@@ -80,31 +76,37 @@
 	<div class="poster5">
 		<div class="container">
 			<div class="row " style="margin-top:20vh; margin-bottom:5vh">
-				<div class="col-4  " >
+				<div class="col-4  ">
 					<div class="card-body" style="background:#000;  border-radius:10px">
 						<h1 class="card-title" style="color:white">APPENNINO ADVENTURES</h1>
-						<button class="btn btn-info" style="font-size:15px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px" >
+						<button class="btn btn-info"
+							style="font-size:15px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px">
 							<strong> Via Provinciale, 3/F, 42037 Cerreto Laghi RE</strong>
 						</button>
 						<a href="tel:+393894955124">
-							<button class="btn btn-info" style="font-size:25px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px">
+							<button class="btn btn-info"
+								style="font-size:25px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px">
 								<i class="fas fa-phone-square-alt"></i>
 								<strong>CHIAMA Ora: +39 3894955124</strong>
 							</button>
 						</a>
 						<a href="mailto:appennino.adventures@gmail.com">
-							<button class="btn btn-info" style="font-size:15px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px">
+							<button class="btn btn-info"
+								style="font-size:15px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;border-radius: 10px">
 								<strong>appennino.adventures@gmail.com</strong>
 							</button>
 						</a>
-						<div class="col-3 mb-3 " >
+						<div class="col-3 mb-3 ">
 							<img src="immagini/a-a.png" style=" border-radius:10px " alt="">
 						</div>
 					</div>
 				</div>
-				<div class="col-5  " >
-					<div class="google-maps"  >
-						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d91379.00953541027!2d10.173125158203124!3d44.2977368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12d53fed567869d1%3A0x3d77c4418101d2bd!2sAppennino%20Adventures!5e0!3m2!1sit!2sit!4v1614378514255!5m2!1sit!2sit" style="width:60vw; height:80vh; border-radius:10px"  allowfullscreen="true" loading="auto"></iframe>
+				<div class="col-5  ">
+					<div class="google-maps">
+						<iframe
+							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d91379.00953541027!2d10.173125158203124!3d44.2977368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12d53fed567869d1%3A0x3d77c4418101d2bd!2sAppennino%20Adventures!5e0!3m2!1sit!2sit!4v1614378514255!5m2!1sit!2sit"
+							style="width:60vw; height:80vh; border-radius:10px" allowfullscreen="true"
+							loading="auto"></iframe>
 					</div>
 				</div>
 			</div>
@@ -115,7 +117,9 @@
 	<!-- Jquery -->
 	<script src="js/bootstrap.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js"
+		integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA=="
+		crossorigin="anonymous"></script>
 
 	<footer class="bg-dark text-center text-white">
 		<!-- Grid container -->
@@ -123,15 +127,18 @@
 			<!-- Section: Social media -->
 			<section class="mb-4">
 				<!-- Facebook -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
 					<i class="fab fa-facebook-f"></i>
 				</a>
 				<!-- Google -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
 					<i class="fab fa-google"></i>
 				</a>
 				<!-- Instagram -->
-				<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+				<a class="btn btn-outline-light btn-floating m-1"
+					href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
 					<i class="fab fa-instagram"></i>
 				</a>
 			</section>
@@ -149,4 +156,5 @@
 	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
 
 </body>
+
 </html>
