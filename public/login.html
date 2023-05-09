@@ -11,138 +11,140 @@
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/bootstrap.min.css" >
 	<link rel="shortcut icon" src="immagini/logo-icon-media.png" />
-	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 	<script>
-	function checkSessionClient()
-	{
-		$.post("/session",{checkSessionClient:true},function(data)
+		function checkSessionClient()
 		{
-			if (data==true)
+			$.post("/session",{checkSessionClient:true},function(data)
 			{
-				$.post("/session",{checkSessionRole:true},function(data)
+				if (data==true)
 				{
-					if (data!=true)
-					{
-						alert('You are already logged in.');
-						window.location.href = "/";
-					}
-				});
-			}
-		});
-	}
+					alert('You are already logged in.');
+					window.location.href = "/public/booking.html";
+				}
+			});
+		}
 
-	$(document).ready(function()
-	{
-		checkSessionClient();
-		$("#register").click(function()
+		$(document).ready(function()
 		{
-			var name = $("#name").val();
-			var surname = $("#surname").val();
-			var cf = $("#cf").val();
-			var email = $("#email").val();
-			var addr = $("#addr").val();
-			var birth = $("#birth").val();
-			var tel = $("#tel").val();
-			var passw = $("#passw").val();
-			var checkbox = $("#checkbox").is(":checked");
-			if (name.length>0 && surname.length>0 && cf.length>0 && email.length>0 && addr.length>0 && birth.length>0 && tel.length>0 && passw.length>0 && checkbox)
-			{
-				var request=
-				{
-					register:true,
-					name:name,
-					surname:surname,
-					cf:cf,
-					email:email,
-					addr:addr,
-					birth:birth,
-					tel:tel,
-					passw:passw
-				};
+			checkSessionClient();
+			//posso far aspettare di caricare la pagina fin quando la sessione non sia settata
 
-				$.post("/login",request,function(data)
-				{
-					if (data=="0")
-					{
-						alert('Congratulations, you have registered! Now login yourself.');
-						window.location.href = "/public/login.html";
-					}
-					else if (data=="1")
-					{
-						alert('Fiscal code and/or email already exist! Please,login yourself.');
-						window.location.href = "/public/login.html";
-					}
-					else
-					{
-						alert('Something was wrong!');
-						window.location.reload();
-					}
-				});
-			}
-			else
+			$("#register").click(function()
 			{
-				alert("Some empty fields!");
-			}
-		});
+				var name = $("#name").val();
+				var surname = $("#surname").val();
+				var cf = $("#cf").val();
+				var email = $("#email").val();
+				var addr = $("#addr").val();
+				var birth = $("#birth").val();
+				var tel = $("#tel").val();
+				var passw = $("#passw").val();
+				var checkbox = $("#checkbox").is(":checked");
 
-		$("#login").click(function()
-		{
-			var mail = $("#mail").val();
-			var psw = $("#psw").val();
-			if (mail.length!=0 && psw.length!=0)
-			{
-				$.post("/login",{loginCl:true,mail:mail,psw:psw},function(data)
+				if (name.length>0 && surname.length>0 && cf.length>0 && email.length>0 && addr.length>0 && birth.length>0 && tel.length>0 && passw.length>0 && checkbox)
 				{
-					if (data[0] == 1)
+					var request=
 					{
-						alert('ERROR! Incorrect data or unregistered user.');
-						window.location.href = "/public/login.html";
-					}
-					else
-					{
-						window.location.href = data[1];
-					}
-				});
-			}
-			else
-			{
-				alert("Some empty fields!");
-			}
-		});
+						register:true,
+						name:name,
+						surname:surname,
+						cf:cf,
+						email:email,
+						addr:addr,
+						birth:birth,
+						tel:tel,
+						passw:passw
+					};
 
-		$("#forgot").click(function()
-		{
-			window.location.href = "/public/forgot.html";
+					$.post("/login",request,function(data)
+					{
+						if (data=="0")
+						{
+							alert('Congratulations, you have registered! Now login yourself.');
+							window.location.href = "/public/login.html";
+						}
+						else if (data=="1")
+						{
+							alert('Fiscal code and/or email already exist! Please,login yourself.');
+							window.location.href = "/public/login.html";
+						}
+						else
+						{
+							alert('Something was wrong!');
+							window.location.reload();
+						}
+					});
+				}
+				else
+				{
+					alert("Some empty fields!");
+				}
+			});
+
+			$("#login").click(function()
+			{
+				var mail = $("#mail").val();
+				var psw = $("#psw").val();
+
+				if (mail.length!=0 && psw.length!=0)
+				{
+					$.post("/login",{loginCl:true,mail:mail,psw:psw},function(data)
+					{
+						if (data[0] == 1)
+						{
+							alert('ERROR! Incorrect data or unregistered user.');
+							window.location.href = "/public/login.html";
+						}
+						else
+						{
+							window.location.href = data[1];
+						}
+					});
+				}
+				else
+				{
+					alert("Some empty fields!");
+				}
+			});
+
+			$("#forgot").click(function()
+			{
+				window.location.href = "/public/forgot.html";
+			});
 		});
-	});
 	</script>
+
+
 </head>
 <body>
-	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
-		<div class="container-fluid">
-			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-				<a class="navbar-brand" href="/">
-					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
-				</a>
-			</div>
-			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
-				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
-				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
-				<button id="Ra" name="Ra" type="button" style="display: none;margin-right:2vw"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
-			</div>
+
+	<nav class="navbar navbar-dark fixed-top bg-dark " style="max-width:100%" >
+		<div class="container">
+			<a class="navbar-brand" href="/">
+				<img src="immagini/logo_small.png" alt="" width="200" height="50">
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/">Home</a>
+			<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+			<a class="navbar-brand"aria-current="page" href="/public/contact.html">Contact</a>
+
 		</div>
 	</nav>
+
 	<div class="hero reveal" id="mainDiv" name="mainDiv">
+
 		<div class="hero__content reveal ">
 			<div class="row ">
 				<div class="col">
+
 				</div>
 				<div class="col">
+
 					<h1 class="medium-text">Sign In</h1>
 					<form class="login">
+
 						<div class="mb-3">
 							<label for="mail" class="form-label">Email address</label>
 							<input type="email" class="form-control" name="mail" id="mail" placeholder="email@example.com">
@@ -151,21 +153,28 @@
 							<label for="psw" class="form-label">Password</label>
 							<input type="password" class="form-control" name="psw" id="psw" placeholder="Password">
 						</div>
+
 						<button type="button" id="login" name="login" class="btn btn-primary">Sign in</button>
 					</form>
 					<div class="dropdown-divider"></div>
 					<a class="dropdown-item" href="#poster2" style="color:white;">New around here? Register now</a>
 					<a class="dropdown-item"  id="forgot" name="forgot" style="color:white;">Forgot password?</a>
+
 				</div>
 				<div class="col">
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="poster2 " id="poster2">
-		<div class="hero__content reveal  ">
-			<div class="row mx-auto ">
-				<div class="col max-auto">
+
+	<div class="poster2" id="poster2">
+
+		<div class="hero__content reveal ">
+			<div class="row ">
+				<div class="col">
+
+				</div>
+				<div class="col">
 					<h1 class="medium-text " style="margin-top:10vh">Register Now</h1>
 					<form class="row g-3" id="registerform">
 						<div class="col-md-6">
@@ -212,10 +221,17 @@
 							<button class="btn btn-primary" href="#mainDiv" id="register" name="register" type="button">Confirm Now!</button>
 						</div>
 					</form>
+
+				</div>
+				<div class="col">
+
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<script src="js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
 	<footer class="bg-dark text-center text-white">
 		<!-- Grid container -->
 		<div class="container p-4 pb-0">
@@ -244,8 +260,7 @@
 		</div>
 		<!-- Copyright -->
 	</footer>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+
 	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
 </body>
 </html>

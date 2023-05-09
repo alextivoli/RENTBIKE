@@ -8,97 +8,100 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
 	<link rel="stylesheet" href="public/style.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="public/css/bootstrap.min.css" >
-	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
 	<script>
-	function checkSessionEmail()
-	{
-		$.post("/session",{checkSessionRole:true},function(data)
+		function checkSessionEmail()
 		{
-			if(data==false)
+			$.post("/session",{checkSessionName:true},function(data)
 			{
-				$.post("/session",{checkSessionName:true},function(data)
+				if (data.length>0)
 				{
-					if (data.length>0)
-					{
-						$("#buttlog").text("Logout");
-						$("#welcomename").text("Hello "+data);
-						$("#Ra").css("display","block");
-						sessionStorage.setItem("currentSession","true");
-					}
-					else
-					{
-						sessionStorage.setItem("currentSession","false");
-					}
-				});
-			}
-		});
-	}
+					$("#buttlog").text("Logout");
+					$("#welcomename").text("Hello "+data);
+					$("#Ra").css("display","block");
+					sessionStorage.setItem("currentSession","true");
+				}
+				else
+				{
+					sessionStorage.setItem("currentSession","false");
+				}
+			});
+		}
 
-	$(document).ready(function()
-	{
-		$("#buttlog").text("Sign In");
-		$("#welcomename").text("Welcome!");
-		checkSessionEmail();
-		$("#buttlog").click(function()
+		$(document).ready(function()
 		{
-			if ((sessionStorage.getItem("currentSession"))=="true")
-			{
-				$.post("/session",{destroySession:true},function(data)
-				{
-					sessionStorage.clear();
-					window.location.href = data;
-				});
-			}
-			else
-			{
-				$.post("/login",{goToLoginPage:true},function(data)
-				{
-					window.location.href = data;
-				});
-			}
-		});
+			$("#buttlog").text("Sign In");
+			$("#welcomename").text("Welcome!");
+			checkSessionEmail();
+			//posso far aspettare di caricare la pagina fin quando la sessione non sia settata
 
-		$("#Ra").click(function()
-		{
-			window.location.href = "/public/reservedArea.html";
+			$("#buttlog").click(function()
+			{
+				if ((sessionStorage.getItem("currentSession"))=="true")
+				{
+					//distruggo la sessione e vado nella index
+					$.post("/session",{destroySession:true},function(data)
+					{
+						sessionStorage.clear();
+						window.location.href = data;
+					});
+				}
+				else
+				{
+					$.post("/login",{goToLoginPage:true},function(data)
+					{
+						window.location.href = data;
+					});
+				}
+			});
+
+			$("#Ra").click(function()
+			{
+				window.location.href = "/public/reservedArea.html";
+			});
+
 		});
-	});
 	</script>
+
 </head>
 <body>
-	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
-		<div class="container-fluid" >
-			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-				<a class="navbar-brand" href="/">
-					<img class="immagine" src="public/immagini/logo_small.png" alt="" width="200" height="50">
-				</a>
-			</div>
-			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
-				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
-				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
-				<button id="Ra" name="Ra" type="button" style="display: none;margin-right:2vw"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
-				<button type="submit" id="buttlog" name="buttlog"  class="btn btn-primary"></button>
-			</div>
+
+	<nav class="navbar navbar-dark fixed-top bg-dark " style="max-width:100%" >
+		<div class="container">
+			<a class="navbar-brand" href="/">
+				<img src="public/immagini/logo_small.png" alt="" width="200" height="50">
+			</a>
+			<a class="navbar-brand" aria-current="page" href="/">Home</a>
+			<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+			<a class="navbar-brand"aria-current="page" href="/public/contact.html">Contact</a>
+			<button id="Ra" name="Ra" type="button" style="display:none"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
+
+			<button type="submit" id="buttlog" name="buttlog"  class="btn btn-primary"></button>
 		</div>
 	</nav>
+
 	<div class="hero">
+
 		<div class="hero__content reveal">
 			<p class="intro-text" id="welcomename"></p>
 			<h1 class="big-text">Booking your bike</h1>
 			<h2 class="medium-text ">Discover our Rental and choose the bike that suits you best!</h2>
+
 		</div>
+
 	</div>
+
 	<div class="poster ">
 		<div class="poster__content">
 			<h3 class="big-text-one"> <br/> Photo gallery</h3>
 		</div>
-		<div class="main-carousel mb-3" data-flickity='{ "cellAlign": "left", "contain": true }'>
+
+		<div class="main-carousel" data-flickity='{ "cellAlign": "left", "contain": true }'>
+
 			<div class="carousel-cell">
 				<div class="carousel-cell__content ">
 					<img src="public/immagini/a.jpg" style="width:30vw;height:50vh; border-radius: 10px;margin-bottom: 10vh;" alt="">
@@ -129,8 +132,11 @@
 					<img src="public/immagini/f.jpg" style="width:30vw;height:50vh;border-radius: 10px;margin-bottom: 10vh;" alt="">
 				</div>
 			</div>
+
 		</div>
+
 	</div>
+
 	<footer class="bg-dark text-center text-white">
 		<!-- Grid container -->
 		<div class="container p-4 pb-0">
@@ -159,11 +165,17 @@
 		</div>
 		<!-- Copyright -->
 	</footer>
+
+
 	<!-- Jquery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="public/js/bootstrap.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+
+
 	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+
 </body>
 </html>

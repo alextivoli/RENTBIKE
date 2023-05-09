@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Contact us</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/bootstrap.min.css" >
+	<link rel="icon" type="image/png" href="/public/favicon.ico"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	function checkSessionEmail()
+	{
+		$.post("/session",{checkSessionRole:true},function(data)
+		{
+			if(data==false)
+			{
+				$.post("/session",{checkSessionName:true},function(data)
+				{
+					if (data.length>0)
+					{
+						$("#buttlog").text("Logout");
+						$("#Ra").css("display","block");
+						sessionStorage.setItem("currentSession","true");
+					}
+					else
+					{
+						sessionStorage.setItem("currentSession","false");
+					}
+				});
+			}
+		});
+	}
+
+	$(document).ready(function()
+	{
+		$("#buttlog").text("Sign In");
+		checkSessionEmail();
+		$("#buttlog").click(function()
+		{
+			if ((sessionStorage.getItem("currentSession"))=="true")
+			{
+				$.post("/session",{destroySession:true},function(data)
+				{
+					sessionStorage.clear();
+					window.location.href = data;
+				});
+			}
+			else
+			{
+				$.post("/login",{goToLoginPage:true},function(data)
+				{
+					window.location.href = data;
+				});
+			}
+		});
+
+		$("#Ra").click(function()
+		{
+			window.location.href = "/public/reservedArea.html";
+		});
+	});
+
+	</script>
+</head>
+<body>
+	<nav class="navbar navbar-dark  bg-dark " style="max-width:100%" >
+		<div class="container-fluid">
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" href="/">
+					<img class="immagine" src="immagini/logo_small.png" alt="" width="200" height="50">
+				</a>
+			</div>
+			<div class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+				<a class="navbar-brand" aria-current="page" style="margin-left:3vw" href="/">Home</a>
+				<a class="navbar-brand"aria-current="page" href="/public/booking.html">Booking</a>
+				<a class="navbar-brand mb-1"aria-current="page"  href="/public/contact.html">Contact</a>
+				<button id="Ra" name="Ra" type="button" style="display: none;margin-right:2vw"  class="btn btn-success"><i class="fas fa-vihara"></i> Reserved Area</button>
+				<button type="submit" id="buttlog" name="buttlog"  class="btn btn-primary"></button>
+			</div>
+		</div>
+	</nav>
+	<div class="poster5">
+		<div class="container " >
+			<div class="row justify-content-center  mx-auto mb-3"   >
+				<div class="container mx-auto " style="  width: 90vw;">
+					<h1 class="text " style="color:white; font-size:50px;  ">APPENNINO ADVENTURES</h1>
+					<div class="container mb-3" style="background:#c0c0c0; border-radius: 10px;">
+						<button class="btn cct " style="font-size:18px;line-height: 1em; color:white" >
+							<strong> Via Provinciale, 3/F, 42037 Cerreto Laghi RE</strong>
+						</button>
+						<a href="mailto:appennino.adventures@gmail.com">
+							<button class="btn cct" style="font-size:18px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;color:white">
+								<strong>appennino.adventures@gmail.com</strong>
+							</button>
+						</a>
+						<a href="tel:+393894955124">
+							<button class="btn cct " style="font-size:18px;margin-top:1vh;margin-bottom:1vh;line-height: 1em;color:white">
+								<i class="fas fa-phone-square-alt"></i>
+								<strong>CHIAMA Ora: +39 3894955124</strong>
+							</button>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="row justify-content-center mx-auto">
+				<div class="container" style=" width: 90vw; ">
+					<div class="google-maps mx-auto"  >
+						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d91379.00953541027!2d10.173125158203124!3d44.2977368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12d53fed567869d1%3A0x3d77c4418101d2bd!2sAppennino%20Adventures!5e0!3m2!1sit!2sit!4v1614378514255!5m2!1sit!2sit" style="width:100% ; height:40vh; border-radius:10px"  allowfullscreen="true" loading="auto"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer class="bg-dark text-center text-white">
+		<!-- Grid container -->
+		<div class="container p-4 pb-0">
+			<!-- Section: Social media -->
+			<section class="mb-4">
+				<!-- Facebook -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
+					<i class="fab fa-facebook-f"></i>
+				</a>
+				<!-- Google -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
+					<i class="fab fa-google"></i>
+				</a>
+				<!-- Instagram -->
+				<a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
+					<i class="fab fa-instagram"></i>
+				</a>
+			</section>
+			<!-- Section: Social media -->
+		</div>
+		<!-- Grid container -->
+		<!-- Copyright -->
+		<div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+			© 2021 Copyright -
+			<span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
+		</div>
+		<!-- Copyright -->
+	</footer>
+	<!-- Jquery -->
+	<script src="js/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+</body>
+</html>
