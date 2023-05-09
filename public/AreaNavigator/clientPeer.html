@@ -1,125 +1,16 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Navigator</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw==" crossorigin="anonymous" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.min.css" integrity="sha512-ztsAq/T5Mif7onFaDEa5wsi2yyDn5ygdVwSSQ4iok5BPJQGYz1CoXWZSA7OgwGWrxrSrbF0K85PD5uLpimu4eQ==" crossorigin="anonymous" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/bootstrap.min.css" >
-  <link rel="icon" type="image/png" href="/public/favicon.ico"/>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAU57-2WyoPta4XpoyWu9Q_UxYgeyVkcog"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
-  <script src="peerclient.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="peerclient.js"></script>
 </head>
 <body>
-  <nav class="navbar navbar-dark fixed-top bg-dark ">
-    <div class="container " >
-      <a class="navbar-brand mx-auto"  href="/">
-        <img src="immagini/logo_small.png"  width="200" height="50">
-      </a>
-    </div>
-  </nav>
-  <div class="poster6 ">
-    <div class="container">
-      <div class="row mb-3">
-        <div class="container " id="navi" name="navi"  >
-          <div class="row  mb-3 mx-auto" style="width:60vw; margin-top:8vh">
-            <button class="btn btn-warning btn-lg  " type="button" id="disconnect" name="disconnect"><b>STOP NAVIGATION</b></button>
-          </div>
-          <div class="row  mb-3 mx-auto" style="width:60vw;">
-            <div class="container " style=" border-radius:10px;width:60vw;height: 8vh;background:#000">
-              <h1 class="mx-auto" style="font-size:6vh;position:center" > <label id="km" >0.00</label> Km</h1>
-            </div>
-          </div>
-          <div class="row  mb-3 mx-auto" style="width:60vw;">
-            <button class="btn btn-danger btn-lg "   type="button" name="sos" id="sos"><b>S.O.S</b></button>
-          </div>
-          <div class="row  mb-3 mx-auto" style="width:60vw;">
-            <div id="maptest"  style="border-radius:10px;width:60vw;height:50vh;"></div>
-          </div>
-        </div>
-        <div class="container " id="videocontainer" style="display:none;">
-          <video class="mx-auto mb-3 " playsinline autoplay id="video" style="display:none; width:60vw;">  </video>
-          <button class="btn btn-dark btn-lg " type="button" name="rotate" style="display:none" id="rotate"><b>ROTATE</b></button>
-          <input class="btn btn-danger btn-lg mx-auto " style="width:60vw;display:none" type="button" id="terminate" name="terminate" value="Termina SOS" /><br>
-        </div>
-      </div>
-      <div class="row mx-auto" style="height:25vh; width:60vw;">
-        <div class="p-2 border bg-light mx-auto" style="max-height:25vh;border-radius:10px; width:60vw; overflow-y:scroll; ">
-          <table class="table table-success">
-            <tbody id="mexTable" >
-              <tr><td><b>No message</b></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-  <footer class="bg-dark text-center text-white">
-    <!-- Grid container -->
-    <div class="container p-4 pb-0">
-      <!-- Section: Social media -->
-      <section class="mb-4">
-        <!-- Facebook -->
-        <a class="btn btn-outline-light btn-floating m-1" href="https://www.facebook.com/Appennino-Adventures-172371379470293/" role="button">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-        <!-- Google -->
-        <a class="btn btn-outline-light btn-floating m-1" href="https://www.google.com/search?client=firefox-b-d&q=appenino+adventures" role="button">
-          <i class="fab fa-google"></i>
-        </a>
-        <!-- Instagram -->
-        <a class="btn btn-outline-light btn-floating m-1" href="https://www.instagram.com/appenninoadventures/?hl=it" role="button">
-          <i class="fab fa-instagram"></i>
-        </a>
-      </section>
-      <!-- Section: Social media -->
-    </div>
-    <!-- Grid container -->
-    <!-- Copyright -->
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-      © 2021 Copyright -
-      <span class="text-white"> Appennino Adventures ASD - All rights reserved. </span>
-    </div>
-    <!-- Copyright -->
-  </footer>
-  <script>
-  function map()
-  {
-    navigator.geolocation.getCurrentPosition(function(position)
-    {
-      if (position)
-      {
-        var actualLat=position.coords.latitude;
-        var actualLng=position.coords.longitude;
-        var mapOptions =
-        {
-          scrollwheel: true,
-          zoom: 20,
-          center: new google.maps.LatLng(actualLat, actualLng)
-        };
-        var bikesMarker=[];
-        var map = new google.maps.Map(document.getElementById('maptest'), mapOptions);
-        var coords=[{lat:actualLat,lng:actualLng}];
-        var tit="I'm here!";
-        var marker = new google.maps.Marker({position: new google.maps.LatLng(coords[0]['lat'], coords[0]['lng']),map: map,title: tit});
-        bikesMarker.push(marker);
-      }
-    });
-  }
-
-  map();
-  window.setInterval(map, 30000);
-  </script>
-  <!-- Jquery -->
-  <script src="js/bootstrap.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/2.2.1/flickity.pkgd.min.js" integrity="sha512-Nx/M3T/fWprNarYOrnl+gfWZ25YlZtSNmhjHeC0+2gCtyAdDFXqaORJBj1dC427zt3z/HwkUpPX+cxzonjUgrA==" crossorigin="anonymous"></script>
-  <script src="https://kit.fontawesome.com/9e95f3b251.js" crossorigin="anonymous"></script>
+<label id="status">Not connected!</label><br>
+<label id="info">No info to tell you.</label><br>
+<input type="button" id="sos" name="sos" value="SOS"/><br>
+<input type="button" id="disconnect" name="disconnect" value="Disconnect"/><br>
+<input type="button" id="terminate" name="terminate" value="Termina SOS" style="display:none"/><br>
+<video playsinline autoplay id="video" style="display:none"></video>
 </body>
 </html>

@@ -1,0 +1,40 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+	$(document).ready(function()
+	{
+		$("#connectPeer").click(function()
+		{
+			var idPeer = $("#idPeer").val();
+
+			if (idPeer.length>0)
+			{
+				$.post("/clientPeer",{validpeer:idPeer},function(data)
+				{
+					if (data=="ok")
+					{
+						//vado alla pagina di navigazione dedicata magari creando link, setto variabili di sessione e attivo il peer con quell'id
+						window.location.href="/public/AreaNavigator/clientPeer.html";
+						alert("ok");
+					}
+					else
+					{
+						alert("Invalid id for today or already connect!");
+						$("#idPeer").val("");
+					}
+				});
+			}
+			else
+			{
+				alert("Empty fields!");
+			}
+		});
+	});
+</script>
+</head>
+<body>
+	<input type="text" id="idPeer" size="38" placeholder="ex. 24fcbe6b-4971-4a35-a4d3-cff310761f85"/>
+	<input type="button" id="connectPeer" value="Connect"/>
+</body>
+</html>
