@@ -1,1 +1,5 @@
 node_modules/*
+private.key
+certificate.crt
+backup.sql
+
