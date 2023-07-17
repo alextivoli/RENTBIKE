@@ -42,11 +42,12 @@ http.createServer(httpApp).listen(httpApp.get('port'), function()
 
 const transporter = nodemailer.createTransport(
   {
-    host: "smtps.aruba.it",
+    host: "smtp.mail.yahoo.com",
+    secure: true,
     auth:
     {
-      user: 'sender@rentbikeappennino.info',
-      pass: '123456sm-!'
+      user: 'mbertolini99@yahoo.com',
+      pass: 'bgprlsykjuoxgcmf'
     },
     port: 465
   });
@@ -78,7 +79,7 @@ const transporter = nodemailer.createTransport(
         {
           host : 'localhost',
           user : 'root',
-          password : 'Juventus98!',
+          password : 'Matisse2023!',
           database : 'bikerent'
         });
 
@@ -91,13 +92,13 @@ const transporter = nodemailer.createTransport(
         //appSessionInizialize
         app.use(session(
           {
-            secret: 'ssshhhhh',
-            store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl : 260}),
+            secret: 'MySecretBertiv2022!!',
+            store: new redisStore({host: 'localhost', port: 6379, client: client, ttl: 260}),
             saveUninitialized: false,
             resave: false
           }));
 
-          app.use("/public",express.static(__dirname+"/public"));
+          app.use("/",express.static(__dirname+"/public"));
           app.use(bodyParser.json());
           app.use(bodyParser.urlencoded({ extended: false }));
           app.use(peerServer);
