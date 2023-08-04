@@ -260,6 +260,10 @@ overflow: hidden;
   margin-left: 10vh;
 }
 
+.box-choose{
+  margin-left: 10vh;
+}
+
 @media (max-width: 768px ) {
 
   .poster5{height: auto;}
