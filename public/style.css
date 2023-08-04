@@ -281,6 +281,10 @@ overflow: hidden;
     margin-top: 15vh !important;
     margin-top: 15vh;
   }
+
+    .box-choose {
+      margin-left: 0;
+    }
 }
 
 
