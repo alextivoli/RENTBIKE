@@ -253,6 +253,10 @@ overflow: hidden;
 .text1{font-size:60px}
 .coupon{width: 20vw;}
 
+.img-fluid{
+  height: 25vh;
+}
+
 @media (max-width: 768px ) {
 
   .poster5{height: auto;}
