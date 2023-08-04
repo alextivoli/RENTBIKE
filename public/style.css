@@ -278,7 +278,11 @@ overflow: hidden;
 
   .text-booking {
     margin-left: 0;
+<<<<<<< HEAD
     margin-top: 15vh !important;
+=======
+    margin-top: 15vh;
+>>>>>>> main
   }
 }
 
