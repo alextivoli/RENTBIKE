@@ -19,7 +19,7 @@ p{line-height: 60px; color:#666; font-weight: 300;}
 
 .big-text{font-size: 70px;font-weight: 900;}
 .big-text-one{font-size: 70px;font-weight: 30;color: #fff; margin-left: 150px; }
-.big-text2{margin-left: 20vh}
+.big-text2{margin-left: 20vh !important}
 .med-text{font-size: 40px; }
 .med-text1{font-size: 250px; padding-top: 90px; }
 .med-text2{font-size: 150px; padding-top: 130px}
