@@ -47,9 +47,6 @@ p{line-height: 60px; color:#666; font-weight: 300;}
 .space-small{margin-top: 4%;height: 20px; max-width:100%}
 .space{margin-top: 4%;height: 200px; max-width:100%}
 
-.big-text2 {
-  margin-left: 0
-}
 
 /* ! Header */
 .header{
@@ -281,6 +278,10 @@ overflow: hidden;
     margin-top: 15vh !important;
     margin-top: 15vh;
   }
+
+    .big-text2 {
+      margin-left: 0
+    }
 }
 
 
