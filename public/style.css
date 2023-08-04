@@ -19,6 +19,7 @@ p{line-height: 60px; color:#666; font-weight: 300;}
 
 .big-text{font-size: 70px;font-weight: 900;}
 .big-text-one{font-size: 70px;font-weight: 30;color: #fff; margin-left: 150px; }
+.big-text2{margin-left: 20vh}
 .med-text{font-size: 40px; }
 .med-text1{font-size: 250px; padding-top: 90px; }
 .med-text2{font-size: 150px; padding-top: 130px}
@@ -46,7 +47,9 @@ p{line-height: 60px; color:#666; font-weight: 300;}
 .space-small{margin-top: 4%;height: 20px; max-width:100%}
 .space{margin-top: 4%;height: 200px; max-width:100%}
 
-
+.big-text2 {
+  margin-left: 0
+}
 
 /* ! Header */
 .header{
@@ -257,6 +260,10 @@ overflow: hidden;
   height: 25vh !important;
 }
 
+.text-booking{
+  margin-left: 10vh;
+}
+
 @media (max-width: 768px ) {
 
   .poster5{height: auto;}
@@ -268,6 +275,11 @@ overflow: hidden;
   .hero5{min-height: 100vh;}
   .coupon{width: 90vw;}
   .text1{font-size:40px}
+
+  .text-booking {
+    margin-left: 0;
+    margin-top: 15vh !important;
+  }
 }
 
 
