@@ -254,7 +254,7 @@ overflow: hidden;
 .coupon{width: 20vw;}
 
 .img-fluid{
-  height: 25vh;
+  height: 25vh !important;
 }
 
 @media (max-width: 768px ) {
