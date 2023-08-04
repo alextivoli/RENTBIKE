@@ -446,7 +446,7 @@ const transporter = nodemailer.createTransport(
           {
             if(req.body.goToLoginPage)
             {
-              res.send('/public/login.html');
+              res.send('/login.html');
             }
 
             if(req.body.loginCl)
